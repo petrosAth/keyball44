@@ -1,0 +1,21 @@
+[
+  {"name":"Keyball Reset","title":"Reset unsaved Keyball settings","shortName":"KB Reset"},
+  {"name":"Keyball Save","title":"Save Keyball settings","shortName":"KB Save"},
+  {"name":"CPI +100","title":"Increase trackball CPI by 100","shortName":"CPI+100"},
+  {"name":"CPI -100","title":"Decrease trackball CPI by 100","shortName":"CPI-100"},
+  {"name":"CPI +1000","title":"Increase trackball CPI by 1000","shortName":"CPI+1K"},
+  {"name":"CPI -1000","title":"Decrease trackball CPI by 1000","shortName":"CPI-1K"},
+  {"name":"Scroll Toggle","title":"Toggle scroll mode","shortName":"Scroll"},
+  {"name":"Scroll Momentary","title":"Momentary scroll mode","shortName":"Scroll MO"},
+  {"name":"Scroll Div +","title":"Increase scroll divider","shortName":"Div+"},
+  {"name":"Scroll Div -","title":"Decrease scroll divider","shortName":"Div-"},
+  {"name":"Auto Mouse Toggle","title":"Toggle automatic mouse layer","shortName":"AutoMouse"},
+  {"name":"Auto Mouse +50","title":"Increase automatic mouse timeout by 50 ms","shortName":"AM+50"},
+  {"name":"Auto Mouse -50","title":"Decrease automatic mouse timeout by 50 ms","shortName":"AM-50"},
+  {"name":"Snap Vertical","title":"Use vertical scroll snapping","shortName":"Snap V"},
+  {"name":"Snap Horizontal","title":"Use horizontal scroll snapping","shortName":"Snap H"},
+  {"name":"Snap Free","title":"Disable scroll snapping","shortName":"Snap Free"},
+  {"name":"Ripple Toggle","title":"Toggle the non-persistent keypress ripple","shortName":"RIPPLE_TOG"},
+  {"name":"Splash Toggle","title":"Toggle the non-persistent keypress splash","shortName":"SPLASH_TOG"},
+  {"name":"Inverse Toggle","title":"Toggle opposite-color keypress holds and fades","shortName":"INVERSE_TOG"}
+]

@@ -1,0 +1,11 @@
+#pragma once
+
+#include "../vial_right/config.h"
+
+#undef RGBLIGHT_LED_COUNT
+#define RGBLIGHT_LED_COUNT 59
+
+#undef RGBLED_SPLIT
+#define RGBLED_SPLIT {30, 29}
+
+#define SPLIT_TRANSACTION_IDS_USER RIPPLE_EVENT_TRANSACTION

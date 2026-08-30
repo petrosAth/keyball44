@@ -1,0 +1,13 @@
+RGBLIGHT_ENABLE = yes
+OLED_ENABLE = yes
+
+VIA_ENABLE = yes
+VIAL_ENABLE = yes
+
+LTO_ENABLE = yes
+QMK_SETTINGS = yes
+TAP_DANCE_ENABLE = yes
+COMBO_ENABLE = yes
+KEY_OVERRIDE_ENABLE = yes
+
+SRC += ledmap_diag_state.c
