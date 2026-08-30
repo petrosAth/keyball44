@@ -1,0 +1,128 @@
+# Custom firmware
+
+The current release, generated after both diagnostic orientations were
+validated, is published as an attachment to the tagged `v1.1.1` GitHub
+release:
+
+```text
+Version: 1.1.1
+Artifact: keyball44-vial_right-custom-v1.1.1-41babbb8.uf2
+SHA-256: efcd6a4fdae5541885db6388038c2a51f98f901ebd07c611041242a8119ff7fd
+```
+
+Release artifacts use the name
+`keyball44-vial_right-custom-v<version>-<upstream-commit>.uf2`. The semantic
+version identifies this workspace's custom firmware release; the trailing
+commit identifies the pinned upstream Vial-QMK source. Increment the version
+for every distributed firmware change and add a corresponding entry to
+[CHANGELOG.md](../CHANGELOG.md). Do not replace an already released artifact
+without changing its version.
+
+The build script reads the release version from [`VERSION`](../VERSION). To
+prepare a release:
+
+1. Update `VERSION` using semantic versioning.
+2. Add a dated entry to `CHANGELOG.md` describing the firmware changes and its
+   validation status.
+3. Run the complete test and build sequence below.
+4. Run `make release`, confirm the digest, tag the commit as `v<VERSION>`, and
+   publish the UF2 and `SHA256SUMS` as release attachments.
+
+Do not distribute or flash any artifact whose name contains
+`stale-left-orientation`. That obsolete build used an incorrect, unmirrored
+left-half coordinate transform and is intentionally absent from the
+repository and releases.
+
+It is built from the Vial-QMK revision in
+[`dependencies.lock`](../dependencies.lock) with the overlay in
+`firmware/keymaps/vial_right_custom/`. From a fresh clone, rebuild and inspect
+it with:
+
+```sh
+make doctor
+make setup
+make test
+make firmware
+```
+
+This pinned Vial-QMK revision normally generates a random 24-bit build ID for
+each compile and uses it as the VIA EEPROM validity signature. The build shim
+pins v1.1.1 to its published ID, `0xF5E3B4`, so clean builds are reproducible
+and preserve the release's stored-layout compatibility.
+
+The build corrects the physical LED count to 59 (`30` left and `29` right).
+Its positions come from the official PCB data recorded in
+[led-mapping.md](led-mapping.md). Key origins include every populated matrix
+position, including thumb keys without a key LED. The coordinate model assumes
+a nominal 19.05 mm gap between the inner key centers; edit the documented
+translation in `ripple_layout.c` if a different fixed placement is preferred.
+
+`RIPPLE_TOG`, `SPLASH_TOG`, and `INVERSE_TOG` appear under Vial's custom
+keycodes. Assign them to any keys on any layer. All custom modes start disabled
+on every boot, are never written to EEPROM, and return to the current stock
+RGBLight mode when the active effect is toggled off. Pressing another custom
+effect's toggle switches directly to it and clears pending animations. The
+OLED shows `RIP`, `SPL`, or `INV` for the active custom mode.
+
+Ripple remains the existing hollow travelling ring. Splash produces a filled,
+rapidly expanding bloom with a full-brightness core about one key pitch wide,
+a soft linear falloff to a 65 mm radius, and a linear fade. Its four speed
+levels last 1.4, 1.1, 0.85, and 0.6 seconds. Overlapping animations use their
+brightest contribution instead of adding brightness. Both effects use the live
+Vial hue, saturation, brightness (capped at 150), and normalized four-level
+speed. Selecting blue in Vial produces the blue splash appearance. Vial's
+`Effect +` and `Effect -` keycodes adjust that speed,
+preserve the selected stock effect, and synchronize the ripple speed across
+both halves. Stock breathing exposes four native speeds; rainbow mood, swirl,
+snake, knight, and twinkle expose three, so the top two normalized levels are
+equivalent for those effects. Static and fixed-interval effects do not change
+speed. Eight keypress events are retained; the oldest is replaced by a ninth.
+Both halves render locally, and a dedicated 12-byte split RPC carries
+key-origin coordinates, the resolved global LED index, and validated
+stock/ripple/splash/inverse mode plus speed updates. Failed state updates
+are retried every 250 ms
+until the other half acknowledges them, and an authoritative state heartbeat
+is sent every two seconds so either half converges after a reset or reconnect.
+
+Inverse mode renders all 59 LEDs from the live RGBLight hue, saturation, and
+brightness, retaining the firmware brightness cap of 150. A keypress uses hue
+`(base + 128) mod 256` with the same saturation and brightness. It holds that
+opposite color for exactly 100 ms, then RGB-crossfades to the live base over
+1.4, 1.1, 0.85, or 0.6 seconds. `Effect +` selects a faster return and
+`Effect -` a slower return; `Hue +` and `Hue -` continue to change the live
+base normally. Every global LED has independent state, and pressing the same
+key again immediately restarts its hold timer.
+
+The 39 switches with dedicated key LEDs map directly to those LEDs. The five
+remaining thumb switches use the nearest underglow positions: left matrix
+`3,3`, `3,4`, and `3,5` use left local LEDs 27, 28, and 29; right matrix `7,4`
+and `7,5` use right local LEDs 1 and 0. Global indices are left local `0`–`29`
+and right local `0`–`28` offset by 30. The complete mapping remains recorded in
+[led-map.csv](led-map.csv).
+
+Trackball scroll conversion retains sub-step movement between pointing-device
+reports. Higher scroll dividers therefore reduce sensitivity without dropping
+slow movements. Partial movement is cleared when scroll mode or its divider
+changes, preventing an old remainder from causing a later scroll step.
+
+Do not flash until the Vial export and both verified factory backups required by
+[recovery.md](recovery.md) exist. Validate the diagnostic sequence before the
+final image: left local indices must follow PCB `LED1`–`LED30`, and right local
+indices must follow `LED1`–`LED29`. The hardware checklist covers the keys,
+trackball modes, OLEDs, Vial, stock-effect restoration, rapid keypresses, and
+split-link stability listed below.
+
+Hardware validation was reported successful on 2026-08-30 for the preceding
+ripple-only build. Version 1.1.1 remains unvalidated until the following have
+been checked on hardware:
+
+- All 44 switches, including the five thumb-to-underglow fallbacks.
+- Rapid overlapping presses and immediate same-key retriggering.
+- Live `Hue +`/`Hue -` changes and all four `Effect +`/`Effect -` levels.
+- Keypress events initiated on either half and synchronized across the split.
+- Direct switching among ripple, splash, and inverse modes.
+- RGB enable/disable behavior, stock restoration, boot-disabled behavior, and
+  the `INV` OLED indicator.
+- State recovery after either half resets or the split link reconnects.
+
+No build or verification command flashes the keyboard automatically.
