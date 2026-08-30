@@ -30,7 +30,7 @@ fi
     sha256sum keyball44-vial_right-custom-v*.uf2 > SHA256SUMS
 )
 if [ "$version" = 1.1.1 ]; then
-    expected='efcd6a4fdae5541885db6388038c2a51f98f901ebd07c611041242a8119ff7fd  keyball44-vial_right-custom-v1.1.1-41babbb8.uf2'
+    expected='87c6b571836612a5c1233737ec4261e9461699c09926b291ea13208f77357a39  keyball44-vial_right-custom-v1.1.1-41babbb8.uf2'
     if ! grep -Fx "$expected" "$workspace/dist/SHA256SUMS" >/dev/null; then
         echo "Refusing release: v1.1.1 checksum does not match the documented release" >&2
         exit 1

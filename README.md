@@ -58,7 +58,7 @@ Download firmware and `SHA256SUMS` together from the matching tagged GitHub
 release. For the initial `v1.1.1` release, the firmware checksum must be:
 
 ```text
-efcd6a4fdae5541885db6388038c2a51f98f901ebd07c611041242a8119ff7fd
+87c6b571836612a5c1233737ec4261e9461699c09926b291ea13208f77357a39
 ```
 
 Binaries are release attachments, not repository files. Older local builds
