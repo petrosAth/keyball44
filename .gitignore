@@ -1,0 +1,33 @@
+# Private recovery material
+backups/
+private/
+
+# External pinned checkouts
+external/
+
+# Generated builds, tools, and release staging
+build/
+dist/
+
+# Firmware/toolchain output
+*.uf2
+*.bin
+*.hex
+*.elf
+*.map
+*.o
+*.a
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Local configuration and editor debris
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/

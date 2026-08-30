@@ -1,0 +1,75 @@
+# Changelog
+
+All notable user-visible changes to the custom Keyball44 firmware are recorded
+here. Versions follow [Semantic Versioning](https://semver.org/).
+
+## [1.1.1] - 2026-08-30
+
+### Changed
+
+- Shortened the `INVERSE_TOG` opposite-color hold from 1,000 ms to 100 ms.
+  The four configured crossfade durations are unchanged.
+
+### Safety and validation
+
+- Host tests and the pinned QMK build pass; hardware validation remains
+  pending for this timing adjustment.
+
+## [1.1.0] - 2026-08-30
+
+### Added
+
+- Vial-assignable `INVERSE_TOG` mode. Every LED displays the live RGBLight
+  base color; a pressed key changes its associated LED to the opposite hue for
+  one second, then crossfades it back independently.
+- Direct matrix-to-LED assignments for all 39 switches with dedicated LEDs,
+  plus nearest-underglow fallbacks for the five thumb switches without one.
+- Unit coverage for inverse hue wrapping, timing, all fade speeds, blending,
+  expiry, retriggering, invalid indices, overlapping keys, the complete
+  matrix-to-LED map, and the extended split packet.
+
+### Changed
+
+- Extended keypress synchronization with the resolved global LED index while
+  retaining coordinates for ripple and splash.
+- The shared four-level effect speed now selects inverse return fades of 1.4,
+  1.1, 0.85, and 0.6 seconds from slowest to fastest.
+
+### Safety and validation
+
+- The custom mode remains boot-disabled and non-persistent, and this release
+  has passed host tests and the pinned QMK build.
+- Hardware validation is still pending for all 44 switches, rapid overlaps,
+  controls, split synchronization/reconnect, OLED status, RGB toggling, and
+  stock-effect restoration.
+
+## [1.0.0] - 2026-08-30
+
+### Added
+
+- Vial-assignable `RIPPLE_TOG` and `SPLASH_TOG` controls for hollow ripple and
+  filled splash keypress animations.
+- Physical 59-LED coordinate map derived from the official PCB data and
+  validated on both assembled halves.
+- Split synchronization for key origins, active lighting mode, and speed, with
+  retries and a periodic state heartbeat.
+- Four normalized animation-speed levels controlled by Vial's existing effect
+  speed keycodes.
+
+### Changed
+
+- Corrected the RGBLight LED count to 30 LEDs on the left and 29 on the right.
+- Preserved the selected stock RGBLight effect while a custom effect is active
+  and restore it when the custom effect is disabled.
+- Retained fractional trackball movement during scroll conversion so higher
+  dividers no longer discard slow movement.
+- Generalized the release artifact name from `ripple` to `custom` because the
+  firmware now contains changes beyond the original ripple effect.
+
+### Safety and validation
+
+- Custom lighting modes start disabled after every boot and are not persisted
+  to EEPROM.
+- The earlier ripple-only build passed hardware validation. This release still
+  requires the full hardware validation checklist in
+  [docs/custom-firmware.md](docs/custom-firmware.md).
