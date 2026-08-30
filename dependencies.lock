@@ -8,3 +8,6 @@ PICOTOOL_REPOSITORY=https://github.com/raspberrypi/picotool.git
 PICOTOOL_TAG=2.3.0
 PICO_SDK_REPOSITORY=https://github.com/raspberrypi/pico-sdk.git
 PICO_SDK_TAG=2.3.0
+ARM_TOOLCHAIN_VERSION=13.3.rel1
+ARM_TOOLCHAIN_URL=https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz
+ARM_TOOLCHAIN_SHA256=95c011cee430e64dd6087c75c800f04b9c49832cc1000127a92a97f9c8d83af4

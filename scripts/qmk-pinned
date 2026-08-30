@@ -18,6 +18,12 @@ if [ "$actual_commit" != "$VIAL_QMK_COMMIT" ]; then
     exit 1
 fi
 
+if [ ! -x "$arm_toolchain_gcc" ]; then
+    echo "Pinned Arm toolchain is not set up; run 'make setup' first." >&2
+    exit 1
+fi
+
+export PATH="$arm_toolchain_bin:$PATH"
 export PYTHONPATH="$compat_path${PYTHONPATH:+:$PYTHONPATH}"
 cd "$vial_qmk_home"
 exec qmk "$@"

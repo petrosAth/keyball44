@@ -24,9 +24,10 @@ flashes a keyboard.
 ## Prerequisites
 
 The build requires Git, Make, a C compiler, CMake, Ninja, jq, Python, QMK CLI,
-the ARM GNU toolchain, and the development files for libusb. Package names
-vary by operating system; `make doctor` reports any missing command-line
-tools.
+curl, and the development files for libusb. `make setup` downloads and
+verifies the pinned Arm GNU Toolchain used to compile firmware; it does not
+need to be preinstalled. Package names vary by operating system; `make
+doctor` reports any missing command-line tools.
 
 ## Fresh-clone workflow
 

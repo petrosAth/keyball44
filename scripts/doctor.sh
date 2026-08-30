@@ -4,7 +4,7 @@
 set -eu
 
 missing=
-for tool in arm-none-eabi-gcc c++ cc cmake git jq make ninja pkg-config python qmk sha256sum; do
+for tool in c++ cc cmake curl git jq make ninja pkg-config python qmk sha256sum tar; do
     if ! command -v "$tool" >/dev/null 2>&1; then
         missing="$missing $tool"
     fi
@@ -12,7 +12,7 @@ done
 
 if [ -n "$missing" ]; then
     echo "Missing required host tools:$missing" >&2
-    echo "Install C/C++ and ARM toolchains, Git, CMake, Ninja, jq, Python, QMK CLI, Make, pkg-config, and coreutils." >&2
+    echo "Install a C/C++ compiler, curl, Git, CMake, Ninja, jq, Python, QMK CLI, Make, pkg-config, tar, and coreutils." >&2
     exit 1
 fi
 

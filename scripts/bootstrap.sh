@@ -69,6 +69,27 @@ clone_at_tag() {
     fi
 }
 
+fetch_tarball() {
+    url=$1
+    sha256=$2
+    destination=$3
+    label=$4
+
+    archive="$workspace/build/$(basename "$url")"
+    if [ ! -e "$archive" ]; then
+        curl -fsSL -o "$archive" "$url"
+    fi
+    actual_sha256=$(sha256sum "$archive" | cut -d' ' -f1)
+    if [ "$actual_sha256" != "$sha256" ]; then
+        rm -f "$archive"
+        echo "Refusing $label archive with unexpected sha256: $actual_sha256; expected $sha256" >&2
+        exit 1
+    fi
+    mkdir -p "$destination"
+    tar -xJf "$archive" --strip-components=1 -C "$destination"
+    rm -f "$archive"
+}
+
 mkdir -p "$workspace/external" "$workspace/build/tools"
 clone_at_commit "$VIAL_QMK_REPOSITORY" "$VIAL_QMK_COMMIT" "$vial_qmk_home" Vial-QMK
 git -C "$vial_qmk_home" submodule update --init --depth=1 -- \
@@ -77,6 +98,11 @@ git -C "$vial_qmk_home" submodule update --init --depth=1 -- \
     lib/lufa \
     lib/pico-sdk \
     lib/printf
+
+if [ ! -x "$arm_toolchain_gcc" ]; then
+    fetch_tarball "$ARM_TOOLCHAIN_URL" "$ARM_TOOLCHAIN_SHA256" \
+        "$arm_toolchain_home" "Arm GNU Toolchain"
+fi
 
 if [ ! -x "$picotool_binary" ]; then
     clone_at_tag "$PICOTOOL_REPOSITORY" "$PICOTOOL_TAG" \

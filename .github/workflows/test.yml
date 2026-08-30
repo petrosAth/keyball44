@@ -17,7 +17,7 @@ jobs:
       - name: Install test prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install --yes cmake gcc-arm-none-eabi jq libusb-1.0-0-dev ninja-build pipx pkg-config
+          sudo apt-get install --yes cmake jq libusb-1.0-0-dev ninja-build pipx pkg-config
           pipx install qmk
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Fetch pinned dependencies

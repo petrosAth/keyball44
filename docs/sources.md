@@ -32,6 +32,7 @@ custom animation must remain on RGBLight.
 - [Official Keyball44 design data](https://github.com/Yowkees/keyball/tree/main/keyball44/design_data)
 - [QMK flashing documentation](https://docs.qmk.fm/flashing)
 - [Official Raspberry Pi picotool](https://github.com/raspberrypi/picotool)
+- [Official Arm GNU Toolchain releases](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
 - [Raspberry Pi microcontroller documentation](https://www.raspberrypi.com/documentation/microcontrollers/)
 - [Arch Linux QMK package](https://archlinux.org/packages/extra/any/qmk/)
 

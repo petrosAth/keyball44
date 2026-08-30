@@ -17,7 +17,7 @@ jobs:
       - name: Install build prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install --yes cmake gcc-arm-none-eabi jq ninja-build pipx libusb-1.0-0-dev pkg-config
+          sudo apt-get install --yes cmake jq ninja-build pipx libusb-1.0-0-dev pkg-config
           pipx install qmk
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Verify tag matches VERSION
