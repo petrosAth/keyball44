@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+name: Host tests
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install test prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes cmake gcc-arm-none-eabi jq libusb-1.0-0-dev ninja-build pipx pkg-config
+          pipx install qmk
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Fetch pinned dependencies
+        run: make setup
+      - name: Run host tests
+        run: make test
