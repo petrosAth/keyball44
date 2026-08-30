@@ -8,8 +8,7 @@ import random
 import sys
 
 
-if not hasattr(ast, "Num"):
-    ast.Num = ast.Constant
+ast.Num = ast.Constant
 
 if not hasattr(ast.Constant(value=0), "n"):
     ast.Constant.n = property(lambda node: node.value)
