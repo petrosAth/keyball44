@@ -1,0 +1,23 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+set -eu
+
+workspace=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+compat_path="$workspace/scripts/qmk-python-compat"
+# shellcheck source=lock.sh
+. "$workspace/scripts/lock.sh"
+
+if [ ! -d "$vial_qmk_home/.git" ]; then
+    echo "Vial-QMK is not set up; run 'make setup' first." >&2
+    exit 1
+fi
+actual_commit=$(git -C "$vial_qmk_home" rev-parse HEAD)
+if [ "$actual_commit" != "$VIAL_QMK_COMMIT" ]; then
+    echo "Refusing Vial-QMK checkout at $actual_commit; expected $VIAL_QMK_COMMIT" >&2
+    exit 1
+fi
+
+export PYTHONPATH="$compat_path${PYTHONPATH:+:$PYTHONPATH}"
+cd "$vial_qmk_home"
+exec qmk "$@"
