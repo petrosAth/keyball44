@@ -7,8 +7,12 @@ release:
 ```text
 Version: 1.1.1
 Artifact: keyball44-vial_right-custom-v1.1.1-41babbb8.uf2
-SHA-256: efcd6a4fdae5541885db6388038c2a51f98f901ebd07c611041242a8119ff7fd
+SHA-256: 87c6b571836612a5c1233737ec4261e9461699c09926b291ea13208f77357a39
 ```
+
+This is the only copy of the digest in the repository; verify a download against
+the `SHA256SUMS` attached to the release. Release artifacts are built on Linux
+x86_64, so a local build on another platform will differ.
 
 Release artifacts use the name
 `keyball44-vial_right-custom-v<version>-<upstream-commit>.uf2`. The semantic

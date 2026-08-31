@@ -23,11 +23,15 @@ flashes a keyboard.
 
 ## Prerequisites
 
-The build requires Git, Make, a C compiler, CMake, Ninja, jq, Python, QMK CLI,
-curl, and the development files for libusb. `make setup` downloads and
-verifies the pinned Arm GNU Toolchain used to compile firmware; it does not
-need to be preinstalled. Package names vary by operating system; `make
-doctor` reports any missing command-line tools.
+The build requires [mise](https://mise.jdx.dev), Git, Make, and a C compiler.
+Everything else — jq, Python, the QMK CLI, and the Arm GNU Toolchain used to
+compile firmware — is pinned in [`mise.toml`](mise.toml), checksum-verified
+against [`mise.lock`](mise.lock), and installed by `mise install`; none of it
+needs to be preinstalled. Package names vary by operating system; `make doctor`
+reports any missing command-line tools.
+
+`make test` runs the host unit tests against stubs and needs only a C compiler
+— no mise, no toolchain, and no upstream checkout.
 
 ## Fresh-clone workflow
 
@@ -38,10 +42,15 @@ make test
 make firmware
 ```
 
-`make setup` fetches the exact dependencies in
-[`dependencies.lock`](dependencies.lock), initializes the required Vial-QMK
-submodules, and builds the pinned picotool under ignored directories. The
+`make setup` installs the pinned tools from [`mise.toml`](mise.toml), fetches
+the exact source revisions in [`dependencies.lock`](dependencies.lock), and
+initializes the required Vial-QMK submodules under ignored directories. The
 firmware appears in `dist/`.
+
+The two pin files divide the work: `mise.toml` pins downloadable tools by
+version and SHA256, while `dependencies.lock` pins source repositories by
+immutable Git revision. Released firmware is built on Linux x86_64; see
+[Releases](#releases).
 
 Other tasks are:
 
@@ -55,11 +64,9 @@ Other tasks are:
 ## Releases
 
 Download firmware and `SHA256SUMS` together from the matching tagged GitHub
-release. For the initial `v1.1.1` release, the firmware checksum must be:
-
-```text
-87c6b571836612a5c1233737ec4261e9461699c09926b291ea13208f77357a39
-```
+release, and verify the firmware against that `SHA256SUMS`. The published
+digest for each release is recorded once, in
+[custom-firmware.md](docs/custom-firmware.md).
 
 Binaries are release attachments, not repository files. Older local builds
 and the obsolete stale-orientation diagnostic are not distributable because
