@@ -33,6 +33,10 @@ reports any missing command-line tools.
 `make test` runs the host unit tests against stubs and needs only a C compiler
 — no mise, no toolchain, and no upstream checkout.
 
+The optional repository-managed `picotool` requires a C++ compiler,
+`pkg-config`, and the libusb-1.0 development files. Its pinned CMake and Ninja
+versions are installed only when its separate setup target runs.
+
 ## Fresh-clone workflow
 
 ```sh
@@ -54,12 +58,37 @@ immutable Git revision. Released firmware is built on Linux x86_64; see
 
 Other tasks are:
 
+- `make setup-picotool` — build the pinned, USB-enabled Raspberry Pi
+  `picotool` used for backup, inspection, and flashing.
 - `make diagnostic` — build the one-LED-at-a-time mapping diagnostic.
 - `make reference-data` — optionally fetch the pinned Yowkees hardware design
   repository used to derive the LED map.
 - `make release` — validate `VERSION`, build the firmware, and create
   `dist/SHA256SUMS`.
 - `make clean` — remove generated builds and release staging.
+
+## Picotool and flashing
+
+Install the optional flashing tool separately from the firmware dependencies:
+
+```sh
+make setup-picotool
+./scripts/picotool version
+```
+
+The wrapper always invokes the repository's pinned build. It deliberately
+passes arguments through without guessing a keyboard half or firmware file:
+
+```sh
+./scripts/picotool info -a
+./scripts/picotool load -v dist/explicitly-named-image.uf2
+```
+
+On Linux, install the upstream rule at
+`external/picotool/udev/60-picotool.rules` according to the operating system's
+udev policy if USB access would otherwise require root. Before loading any
+image, follow the per-half backup and power-safety procedure in
+[the recovery guide](docs/recovery.md).
 
 ## Releases
 

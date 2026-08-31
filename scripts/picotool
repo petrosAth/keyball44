@@ -1,0 +1,15 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+set -eu
+
+workspace=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+# shellcheck source=common.sh
+. "$workspace/scripts/common.sh"
+
+if [ ! -x "$picotool_binary" ]; then
+    echo "Pinned picotool is not set up; run 'make setup-picotool' first." >&2
+    exit 1
+fi
+
+exec "$picotool_binary" "$@"

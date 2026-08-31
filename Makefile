@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-.PHONY: doctor setup reference-data test firmware diagnostic release clean
+.PHONY: doctor setup setup-picotool reference-data test firmware diagnostic release clean
 
 doctor:
 	./scripts/doctor.sh
@@ -8,6 +8,10 @@ doctor:
 setup:
 	mise install
 	./scripts/bootstrap.sh
+
+# CMake and Ninja are task-scoped in mise.toml, so normal setup stays lean.
+setup-picotool:
+	mise run setup-picotool
 
 reference-data:
 	./scripts/bootstrap.sh --reference-data

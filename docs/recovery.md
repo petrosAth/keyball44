@@ -1,8 +1,18 @@
 # Backup and recovery procedure
 
 This is the mandatory safety gate before modifying either half. Commands are
-shown for official Raspberry Pi `picotool`; check the installed version's help
-before use because command-line details may change.
+shown through the repository wrapper for its pinned official Raspberry Pi
+`picotool` build. Install and verify it before connecting a keyboard:
+
+```sh
+make setup-picotool
+./scripts/picotool version
+```
+
+The setup requires a C++ compiler, `pkg-config`, and the libusb-1.0 development
+files. On Linux, install `external/picotool/udev/60-picotool.rules` according to
+the operating system's udev policy if the device is not accessible as the
+current user.
 
 ## Non-negotiable rules
 
@@ -34,14 +44,14 @@ beginning, for the right half:
 4. Confirm exactly one RP2040 device is visible:
 
    ```sh
-   picotool info -a
+   ./scripts/picotool info -a
    ```
 
 5. Save and verify all accessible flash, choosing the correct output filename:
 
    ```sh
-   picotool save -a -v "$KEYBALL44_PRIVATE_BACKUP_DIR/left-factory.uf2"
-   picotool save -a -v "$KEYBALL44_PRIVATE_BACKUP_DIR/right-factory.uf2"
+   ./scripts/picotool save -a -v "$KEYBALL44_PRIVATE_BACKUP_DIR/left-factory.uf2"
+   ./scripts/picotool save -a -v "$KEYBALL44_PRIVATE_BACKUP_DIR/right-factory.uf2"
    ```
 
    Run only the command for the physically connected half.
@@ -53,8 +63,8 @@ beginning, for the right half:
    sha256sum "$KEYBALL44_PRIVATE_BACKUP_DIR/right-factory.uf2"
    ```
 
-7. Record `picotool info -a` output, the filename, half, file size, date, and
-   SHA-256 digest in a private backup manifest.
+7. Record `./scripts/picotool info -a` output, the filename, half, file size,
+   date, and SHA-256 digest in a private backup manifest.
 8. Disconnect USB before moving to the other half or reconnecting TRRS.
 
 Do not proceed if either backup cannot be read, verified, or unambiguously
@@ -64,12 +74,12 @@ associated with its half.
 
 1. Disconnect USB and TRRS.
 2. Put only the intended half in BOOTSEL mode and connect it by USB.
-3. Use `picotool info -a` to confirm the device.
+3. Use `./scripts/picotool info -a` to confirm the device.
 4. Verify the UF2 checksum against the build manifest.
 5. Load with verification:
 
    ```sh
-   picotool load -v dist/explicitly-named-image.uf2
+   ./scripts/picotool load -v dist/explicitly-named-image.uf2
    ```
 
 6. Disconnect and reconnect USB to boot the application.
@@ -90,8 +100,8 @@ If a custom build behaves unexpectedly:
 4. Restore and verify the corresponding factory image:
 
    ```sh
-   picotool load -v "$KEYBALL44_PRIVATE_BACKUP_DIR/left-factory.uf2"
-   picotool load -v "$KEYBALL44_PRIVATE_BACKUP_DIR/right-factory.uf2"
+   ./scripts/picotool load -v "$KEYBALL44_PRIVATE_BACKUP_DIR/left-factory.uf2"
+   ./scripts/picotool load -v "$KEYBALL44_PRIVATE_BACKUP_DIR/right-factory.uf2"
    ```
 
    Run only the command matching the connected half.
