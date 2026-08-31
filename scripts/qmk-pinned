@@ -4,10 +4,11 @@
 set -eu
 
 workspace=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-compat_path="$workspace/scripts/qmk-python-compat"
-# shellcheck source=lock.sh
-. "$workspace/scripts/lock.sh"
+# shellcheck source=common.sh
+. "$workspace/scripts/common.sh"
 
+# Every compile goes through here, so this is the one place that asserts the
+# pinned checkout and the pinned cross-compiler.
 if [ ! -d "$vial_qmk_home/.git" ]; then
     echo "Vial-QMK is not set up; run 'make setup' first." >&2
     exit 1
@@ -18,12 +19,16 @@ if [ "$actual_commit" != "$VIAL_QMK_COMMIT" ]; then
     exit 1
 fi
 
-if [ ! -x "$arm_toolchain_gcc" ]; then
-    echo "Pinned Arm toolchain is not set up; run 'make setup' first." >&2
-    exit 1
-fi
+# The QMK CLI and the Arm GNU Toolchain are pinned and checksum-verified by
+# mise; see mise.toml. The Makefile runs the build under 'mise exec', which is
+# what puts both on PATH.
+for tool in qmk arm-none-eabi-gcc; do
+    if ! command -v "$tool" >/dev/null 2>&1; then
+        echo "Pinned $tool is not on PATH; run 'mise install', or invoke this as 'mise exec -- $0'." >&2
+        exit 1
+    fi
+done
 
-export PATH="$arm_toolchain_bin:$PATH"
-export PYTHONPATH="$compat_path${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$workspace/scripts/qmk-python-compat${PYTHONPATH:+:$PYTHONPATH}"
 cd "$vial_qmk_home"
 exec qmk "$@"

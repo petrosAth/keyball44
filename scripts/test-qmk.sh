@@ -1,11 +1,15 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+# Guards the Python compatibility shim that the pinned QMK CLI depends on.
+# Run as a precondition by scripts/build.sh rather than with the host unit
+# tests, because it needs the pinned Vial-QMK checkout.
+
 set -eu
 
 workspace=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-# shellcheck source=lock.sh
-. "$workspace/scripts/lock.sh"
+# shellcheck source=common.sh
+. "$workspace/scripts/common.sh"
 
 PYTHONPATH="$workspace/scripts/qmk-python-compat:$vial_qmk_home/lib/python${PYTHONPATH:+:$PYTHONPATH}" \
     python - <<'PY'
@@ -17,9 +21,8 @@ assert isinstance(ast.parse("60", mode="eval").body, ast.Num)
 assert compute("60") == 60
 PY
 
-"$workspace/scripts/qmk-pinned" --version >/dev/null
-"$workspace/scripts/qmk-pinned" info -kb keyball/keyball44 >/dev/null
-
+# The published build ID must override this Vial revision's random VIA EEPROM
+# signature, or release builds stop being reproducible.
 build_id=$(
     KEYBALL44_BUILD_ID=0xF5E3B4 \
         PYTHONPATH="$workspace/scripts/qmk-python-compat" \

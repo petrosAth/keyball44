@@ -6,22 +6,24 @@ doctor:
 	./scripts/doctor.sh
 
 setup:
+	mise install
 	./scripts/bootstrap.sh
 
 reference-data:
 	./scripts/bootstrap.sh --reference-data
 
 test:
-	./scripts/test-all.sh
+	./scripts/test.sh
 
+# 'mise exec' puts the pinned jq, Python, QMK CLI, and Arm toolchain on PATH.
 firmware:
-	./scripts/build-custom-firmware.sh
+	mise exec -- ./scripts/build.sh custom
 
 diagnostic:
-	./scripts/build-ledmap-diagnostic.sh
+	mise exec -- ./scripts/build.sh diagnostic
 
 release:
-	./scripts/release.sh
+	mise exec -- ./scripts/release.sh
 
 clean:
 	rm -rf build dist

@@ -1,13 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Repository URLs and immutable revisions used by the build and reference data.
+# Host tools and the Arm GNU Toolchain are pinned separately in mise.toml.
 VIAL_QMK_REPOSITORY=https://github.com/tangbonze/vial-qmk.git
 VIAL_QMK_COMMIT=41babbb8ce6ee4029b8aa13195eeed15f1f1afb5
 KEYBALL_REPOSITORY=https://github.com/Yowkees/keyball.git
 KEYBALL_COMMIT=78de67c49f38836aca06bccd87b42d297d89e1b4
-PICOTOOL_REPOSITORY=https://github.com/raspberrypi/picotool.git
-PICOTOOL_TAG=2.3.0
-PICO_SDK_REPOSITORY=https://github.com/raspberrypi/pico-sdk.git
-PICO_SDK_TAG=2.3.0
-ARM_TOOLCHAIN_VERSION=13.3.rel1
-ARM_TOOLCHAIN_URL=https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz
-ARM_TOOLCHAIN_SHA256=95c011cee430e64dd6087c75c800f04b9c49832cc1000127a92a97f9c8d83af4

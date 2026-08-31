@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Pinned host tools and the Arm GNU Toolchain used to compile firmware.
+# Source repository revisions are pinned separately in dependencies.lock.
+
+[settings]
+lockfile = true
+
+[tools]
+jq = "1.8.2"
+# QMK 1.2.0 needs ast.Num, which was removed in Python 3.14. 3.12 is also the
+# interpreter that produced the verified v1.1.1 release artifact; see
+# scripts/test-qmk.sh for the guard.
+python = "3.12.14"
+pipx = "1.8.0"
+"pipx:qmk" = "1.2.0"
+
+[tools."http:arm-none-eabi-gcc"]
+version = "13.3.rel1"
+strip_components = 1
+bin_path = "bin"
+
+[tools."http:arm-none-eabi-gcc".platforms.linux-x64]
+url = "https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz"
+checksum = "sha256:95c011cee430e64dd6087c75c800f04b9c49832cc1000127a92a97f9c8d83af4"
+
+[tools."http:arm-none-eabi-gcc".platforms.linux-arm64]
+url = "https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-aarch64-arm-none-eabi.tar.xz"
+checksum = "sha256:c8824bffd057afce2259f7618254e840715f33523a3d4e4294f471208f976764"
+
+[tools."http:arm-none-eabi-gcc".platforms.macos-x64]
+url = "https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-darwin-x86_64-arm-none-eabi.tar.xz"
+checksum = "sha256:1ab00742d1ed0926e6f227df39d767f8efab46f5250505c29cb81f548222d794"
+
+[tools."http:arm-none-eabi-gcc".platforms.macos-arm64]
+url = "https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz"
+checksum = "sha256:fb6921db95d345dc7e5e487dd43b745e3a5b4d5c0c7ca4f707347148760317b4"
