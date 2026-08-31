@@ -29,6 +29,8 @@ run_test() {
 
 run_test inverse-engine \
     "$workspace/tests/inverse_engine_test.c" "$custom/inverse_engine.c"
+run_test heatmap-engine \
+    "$workspace/tests/heatmap_engine_test.c" "$custom/heatmap_engine.c"
 run_test ledmap-diag \
     "$workspace/tests/ledmap_diag_state_test.c" "$ledmap/ledmap_diag_state.c"
 run_test lighting-speed \

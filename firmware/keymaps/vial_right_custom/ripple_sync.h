@@ -11,6 +11,7 @@ typedef enum {
   RIPPLE_EFFECT_RIPPLE,
   RIPPLE_EFFECT_SPLASH,
   RIPPLE_EFFECT_INVERSE,
+  RIPPLE_EFFECT_HEATMAP,
 } ripple_effect_mode_t;
 
 typedef struct {

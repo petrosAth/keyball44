@@ -22,6 +22,11 @@ for every distributed firmware change and add a corresponding entry to
 [CHANGELOG.md](../CHANGELOG.md). Do not replace an already released artifact
 without changing its version.
 
+Version 1.2.0 is prepared in this workspace but has not been published or
+flashed. Its successful local build is named
+`keyball44-vial_right-custom-v1.2.0-41babbb8.uf2`. The v1.1.1 checksum above
+remains the authoritative checksum for that published release.
+
 The build script reads the release version from [`VERSION`](../VERSION). To
 prepare a release:
 
@@ -61,12 +66,13 @@ position, including thumb keys without a key LED. The coordinate model assumes
 a nominal 19.05 mm gap between the inner key centers; edit the documented
 translation in `ripple_layout.c` if a different fixed placement is preferred.
 
-`RIPPLE_TOG`, `SPLASH_TOG`, and `INVERSE_TOG` appear under Vial's custom
-keycodes. Assign them to any keys on any layer. All custom modes start disabled
-on every boot, are never written to EEPROM, and return to the current stock
-RGBLight mode when the active effect is toggled off. Pressing another custom
-effect's toggle switches directly to it and clears pending animations. The
-OLED shows `RIP`, `SPL`, or `INV` for the active custom mode.
+`RIPPLE_TOG`, `SPLASH_TOG`, `INVERSE_TOG`, and `HEATMAP_TOG` appear under
+Vial's custom keycodes. Assign them to any keys on any layer. All custom modes
+start disabled on every boot, are never written to EEPROM, and return to the
+current stock RGBLight mode when the active effect is toggled off. Pressing
+another custom effect's toggle switches directly to it and clears all custom
+effect state. The OLED shows `RIP`, `SPL`, `INV`, or `HMP` for the active
+custom mode.
 
 Ripple remains the existing hollow travelling ring. Splash produces a filled,
 rapidly expanding bloom with a full-brightness core about one key pitch wide,
@@ -83,7 +89,7 @@ equivalent for those effects. Static and fixed-interval effects do not change
 speed. Eight keypress events are retained; the oldest is replaced by a ninth.
 Both halves render locally, and a dedicated 12-byte split RPC carries
 key-origin coordinates, the resolved global LED index, and validated
-stock/ripple/splash/inverse mode plus speed updates. Failed state updates
+stock/ripple/splash/inverse/heatmap mode plus speed updates. Failed state updates
 are retried every 250 ms
 until the other half acknowledges them, and an authoritative state heartbeat
 is sent every two seconds so either half converges after a reset or reconnect.
@@ -96,6 +102,18 @@ opposite color for exactly 100 ms, then RGB-crossfades to the live base over
 `Effect -` a slower return; `Hue +` and `Hue -` continue to change the live
 base normally. Every global LED has independent state, and pressing the same
 key again immediately restarts its hold timer.
+
+Heatmap mode starts with every LED dark. Each keypress first applies all whole
+decay intervals elapsed for that key, adds one of ten brightness levels, caps
+at 100%, and restarts only that key's countdown. Each interval removes exactly
+one level, so a fully lit key reaches zero after ten intervals. The four speed
+levels use 1,200, 900, 600, and 300 ms intervals from slowest to fastest;
+`Effect +` selects a faster interval and `Effect -` a slower one. A speed
+change resolves elapsed decay using the old speed, preserves the resulting
+levels, and restarts every lit countdown from one synchronized timestamp on
+both halves. The mode uses the live Vial hue and saturation, and scales each
+level against the live brightness after the firmware cap of 150. Unmapped
+underglow LEDs remain off.
 
 The 39 switches with dedicated key LEDs map directly to those LEDs. The five
 remaining thumb switches use the nearest underglow positions: left matrix
@@ -117,16 +135,31 @@ trackball modes, OLEDs, Vial, stock-effect restoration, rapid keypresses, and
 split-link stability listed below.
 
 Hardware validation was reported successful on 2026-08-30 for the preceding
-ripple-only build. Version 1.1.1 remains unvalidated until the following have
+ripple-only build. Version 1.2.0 remains unvalidated until the following have
 been checked on hardware:
 
 - All 44 switches, including the five thumb-to-underglow fallbacks.
-- Rapid overlapping presses and immediate same-key retriggering.
+- In heatmap mode, all 44 switches light only their mapped LED, including the
+  five thumb-to-underglow fallbacks; unmapped LEDs remain dark.
+- Ten rapid presses reach 100% without an intervening decay, an eleventh press
+  remains capped, and independently pressed keys retain independent levels and
+  countdowns.
+- A fully lit key reaches zero after approximately 12, 9, 6, and 3 seconds at
+  the four speed levels, with one exact 10% decrement per interval.
+- `Effect +` selects shorter intervals and `Effect -` longer ones without an
+  immediate decrement; all currently lit countdowns restart together.
+- Live hue, saturation, and brightness changes recolor/rescale lit heatmap
+  keys immediately while preserving their levels.
+- Rapid overlapping presses and immediate same-key retriggering in every
+  custom mode.
 - Live `Hue +`/`Hue -` changes and all four `Effect +`/`Effect -` levels.
 - Keypress events initiated on either half and synchronized across the split.
-- Direct switching among ripple, splash, and inverse modes.
+- Direct switching among ripple, splash, inverse, and heatmap clears transient
+  state for both the mode being left and the mode being entered.
 - RGB enable/disable behavior, stock restoration, boot-disabled behavior, and
-  the `INV` OLED indicator.
+  the `HMP` OLED indicator.
 - State recovery after either half resets or the split link reconnects.
 
-No build or verification command flashes the keyboard automatically.
+No build, verification, or setup command flashes the keyboard automatically.
+Flashing requires an explicit `./scripts/picotool load` command and firmware
+filename as described in [recovery.md](recovery.md).

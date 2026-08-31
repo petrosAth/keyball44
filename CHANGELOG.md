@@ -3,6 +3,33 @@
 All notable user-visible changes to the custom Keyball44 firmware are recorded
 here. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-09-01
+
+### Added
+
+- Vial-assignable `HEATMAP_TOG` mode. Each of the 44 switches independently
+  raises its mapped LED by 10% per press, up to 100%, then loses exactly 10%
+  at each decay interval until dark.
+- Host coverage for initialization, invalid indices, independent keys,
+  accumulation and saturation, all decay boundaries, exact extinction,
+  retrigger timing, synchronized speed retiming, live brightness scaling, and
+  the extended split mode and packet data.
+
+### Changed
+
+- Extended the existing global switch-to-LED map and 12-byte split protocol
+  to carry heatmap presses and synchronized speed-change timestamps.
+- The four shared speed levels select heatmap decrement intervals of 1.2, 0.9,
+  0.6, and 0.3 seconds from slowest to fastest. Changing speed preserves the
+  current levels and restarts all lit-key countdowns together.
+
+### Safety and validation
+
+- Heatmap state starts empty, resets on mode changes, remains runtime-only,
+  and does not alter the published v1.1.1 artifact or checksum.
+- Host tests and the pinned QMK build pass; hardware validation remains
+  pending for the new heatmap behavior.
+
 ## [1.1.1] - 2026-08-30
 
 ### Changed

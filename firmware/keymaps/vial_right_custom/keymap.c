@@ -13,6 +13,7 @@
 
 #include "lib/keyball/keyball.h"
 #include "lib/oledkit/oledkit.h"
+#include "heatmap_engine.h"
 #include "inverse_engine.h"
 #include "lighting_speed.h"
 #include "rgblight.h"
@@ -28,12 +29,15 @@
 #define RIPPLE_TOG QK_KB_16
 #define SPLASH_TOG QK_KB_17
 #define INVERSE_TOG QK_KB_18
+#define HEATMAP_TOG QK_KB_19
 #define RIPPLE_FRAME_INTERVAL_MS 16
 
 static ripple_engine_t ripple_engine;
 static inverse_engine_t inverse_engine;
+static heatmap_engine_t heatmap_engine;
 static ripple_effect_mode_t ripple_effect_mode;
 static uint32_t ripple_last_frame;
+static uint32_t ripple_speed_changed_at;
 static uint8_t ripple_speed;
 static ripple_sync_state_t ripple_sync;
 static scroll_accumulator_t scroll_accumulators[2][2];
@@ -104,6 +108,7 @@ static void ripple_set_effect_mode(ripple_effect_mode_t mode) {
   ripple_effect_mode = mode;
   ripple_engine_init(&ripple_engine);
   inverse_engine_init(&inverse_engine);
+  heatmap_engine_init(&heatmap_engine);
   if (mode != RIPPLE_EFFECT_STOCK) {
     rgblight_timer_disable();
     ripple_last_frame = 0;
@@ -124,7 +129,13 @@ static void ripple_receive(uint8_t input_size, const void *input,
   if (packet->kind == RIPPLE_PACKET_STATE) {
     ripple_effect_mode_t mode =
         ripple_effect_mode_normalize(packet->effect_mode);
-    ripple_speed = lighting_speed_normalize(packet->speed);
+    uint8_t speed = lighting_speed_normalize(packet->speed);
+    if (ripple_effect_mode == RIPPLE_EFFECT_HEATMAP &&
+        mode == ripple_effect_mode && speed != ripple_speed) {
+      heatmap_engine_retime(&heatmap_engine, packet->started_at, ripple_speed);
+    }
+    ripple_speed = speed;
+    ripple_speed_changed_at = packet->started_at;
     if (ripple_effect_mode != mode) {
       ripple_set_effect_mode(mode);
     }
@@ -135,6 +146,9 @@ static void ripple_receive(uint8_t input_size, const void *input,
     if (ripple_effect_mode == RIPPLE_EFFECT_INVERSE) {
       (void)inverse_engine_trigger(&inverse_engine, packet->led_index,
                                    packet->started_at);
+    } else if (ripple_effect_mode == RIPPLE_EFFECT_HEATMAP) {
+      (void)heatmap_engine_press(&heatmap_engine, packet->led_index,
+                                 packet->started_at, ripple_speed);
     } else {
       ripple_engine_add(&ripple_engine, packet->x, packet->y,
                         packet->started_at);
@@ -151,6 +165,7 @@ static bool ripple_send(const ripple_packet_t *packet) {
 static void ripple_send_state(uint32_t now) {
   ripple_packet_t packet = {.kind = RIPPLE_PACKET_STATE,
                             .effect_mode = ripple_effect_mode,
+                            .started_at = ripple_speed_changed_at,
                             .speed = ripple_speed};
   ripple_sync_record_attempt(&ripple_sync, now, ripple_send(&packet));
 }
@@ -176,8 +191,8 @@ static void ripple_render(void) {
   rgb_t opposite_rgb = hsv_to_rgb(opposite_hsv);
 
   for (uint8_t i = 0; i < count; ++i) {
+    uint8_t global_index = is_keyboard_left() ? i : i + 30;
     if (ripple_effect_mode == RIPPLE_EFFECT_INVERSE) {
-      uint8_t global_index = is_keyboard_left() ? i : i + 30;
       inverse_rgb_t color = inverse_engine_color(
           &inverse_engine, global_index, now, ripple_speed,
           (inverse_rgb_t){base_rgb.r, base_rgb.g, base_rgb.b},
@@ -186,11 +201,16 @@ static void ripple_render(void) {
       continue;
     }
     hsv_t pixel = hsv;
-    pixel.v = ripple_effect_mode == RIPPLE_EFFECT_SPLASH
-                  ? splash_engine_intensity(&ripple_engine, leds[i].x,
-                                            leds[i].y, now, ripple_speed, hsv.v)
-                  : ripple_engine_intensity(&ripple_engine, leds[i].x,
-                                            leds[i].y, now, ripple_speed, hsv.v);
+    if (ripple_effect_mode == RIPPLE_EFFECT_HEATMAP) {
+      pixel.v = heatmap_engine_brightness(&heatmap_engine, global_index, now,
+                                          ripple_speed, hsv.v);
+    } else if (ripple_effect_mode == RIPPLE_EFFECT_SPLASH) {
+      pixel.v = splash_engine_intensity(&ripple_engine, leds[i].x, leds[i].y,
+                                        now, ripple_speed, hsv.v);
+    } else {
+      pixel.v = ripple_engine_intensity(&ripple_engine, leds[i].x, leds[i].y,
+                                        now, ripple_speed, hsv.v);
+    }
     rgb_t rgb = hsv_to_rgb(pixel);
     rgblight_driver.set_color(i, rgb.r, rgb.g, rgb.b);
   }
@@ -200,9 +220,11 @@ static void ripple_render(void) {
 void keyboard_post_init_user(void) {
   ripple_engine_init(&ripple_engine);
   inverse_engine_init(&inverse_engine);
+  heatmap_engine_init(&heatmap_engine);
   ripple_effect_mode = RIPPLE_EFFECT_STOCK;
   ripple_speed =
       lighting_speed_from_mode(rgblight_get_mode(), rgblight_get_speed());
+  ripple_speed_changed_at = sync_timer_read32();
   ripple_sync_init(&ripple_sync);
   if (!is_keyboard_master()) {
     transaction_register_rpc(RIPPLE_EVENT_TRANSACTION, ripple_receive);
@@ -232,11 +254,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
 
   if (keycode == RIPPLE_TOG || keycode == SPLASH_TOG ||
-      keycode == INVERSE_TOG) {
+      keycode == INVERSE_TOG || keycode == HEATMAP_TOG) {
     ripple_effect_mode_t selected =
-        keycode == RIPPLE_TOG   ? RIPPLE_EFFECT_RIPPLE
-        : keycode == SPLASH_TOG ? RIPPLE_EFFECT_SPLASH
-                                : RIPPLE_EFFECT_INVERSE;
+        keycode == RIPPLE_TOG    ? RIPPLE_EFFECT_RIPPLE
+        : keycode == SPLASH_TOG  ? RIPPLE_EFFECT_SPLASH
+        : keycode == INVERSE_TOG ? RIPPLE_EFFECT_INVERSE
+                                  : RIPPLE_EFFECT_HEATMAP;
     if (ripple_effect_mode == RIPPLE_EFFECT_STOCK) {
       ripple_speed =
           lighting_speed_from_mode(rgblight_get_mode(), ripple_speed);
@@ -251,8 +274,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
 
   if (keycode == RGB_SPI || keycode == RGB_SPD) {
+    uint32_t speed_changed_at = sync_timer_read32();
     if (ripple_effect_mode != RIPPLE_EFFECT_STOCK) {
-      ripple_speed = lighting_speed_step(ripple_speed, keycode == RGB_SPI);
+      uint8_t new_speed =
+          lighting_speed_step(ripple_speed, keycode == RGB_SPI);
+      if (new_speed != ripple_speed) {
+        if (ripple_effect_mode == RIPPLE_EFFECT_HEATMAP) {
+          heatmap_engine_retime(&heatmap_engine, speed_changed_at,
+                                ripple_speed);
+        }
+        ripple_speed = new_speed;
+        ripple_speed_changed_at = speed_changed_at;
+      }
     } else {
       ripple_speed = lighting_speed_step_for_mode(
           rgblight_get_mode(), ripple_speed, keycode == RGB_SPI);
@@ -281,6 +314,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       uint32_t started_at = sync_timer_read32();
       if (ripple_effect_mode == RIPPLE_EFFECT_INVERSE) {
         (void)inverse_engine_trigger(&inverse_engine, led_index, started_at);
+      } else if (ripple_effect_mode == RIPPLE_EFFECT_HEATMAP) {
+        (void)heatmap_engine_press(&heatmap_engine, led_index, started_at,
+                                   ripple_speed);
       } else {
         ripple_engine_add(&ripple_engine, point.x, point.y, started_at);
       }
@@ -289,6 +325,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                                 .x = point.x,
                                 .y = point.y,
                                 .started_at = started_at,
+                                .speed = ripple_speed,
                                 .led_index = led_index};
       (void)ripple_send(&packet);
     }
@@ -314,6 +351,8 @@ void oledkit_render_info_user(void) {
     oled_write_P(PSTR(" SPL"), false);
   } else if (ripple_effect_mode == RIPPLE_EFFECT_INVERSE) {
     oled_write_P(PSTR(" INV"), false);
+  } else if (ripple_effect_mode == RIPPLE_EFFECT_HEATMAP) {
+    oled_write_P(PSTR(" HMP"), false);
   }
 }
 #endif

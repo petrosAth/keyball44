@@ -10,5 +10,5 @@ TAP_DANCE_ENABLE = yes
 COMBO_ENABLE = yes
 KEY_OVERRIDE_ENABLE = yes
 
-SRC += inverse_engine.c lighting_speed.c ripple_engine.c ripple_layout.c ripple_sync.c \
-       scroll_accumulator.c
+SRC += heatmap_engine.c inverse_engine.c lighting_speed.c ripple_engine.c \
+       ripple_layout.c ripple_sync.c scroll_accumulator.c

@@ -48,7 +48,9 @@ static void test_effect_mode_validation(void) {
          RIPPLE_EFFECT_SPLASH);
   assert(ripple_effect_mode_normalize(RIPPLE_EFFECT_INVERSE) ==
          RIPPLE_EFFECT_INVERSE);
-  assert(ripple_effect_mode_normalize(4) == RIPPLE_EFFECT_STOCK);
+  assert(ripple_effect_mode_normalize(RIPPLE_EFFECT_HEATMAP) ==
+         RIPPLE_EFFECT_HEATMAP);
+  assert(ripple_effect_mode_normalize(5) == RIPPLE_EFFECT_STOCK);
   assert(ripple_effect_mode_normalize(255) == RIPPLE_EFFECT_STOCK);
 }
 

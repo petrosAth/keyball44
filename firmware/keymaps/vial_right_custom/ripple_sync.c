@@ -1,7 +1,7 @@
 #include "ripple_sync.h"
 
 ripple_effect_mode_t ripple_effect_mode_normalize(uint8_t mode) {
-  return mode <= RIPPLE_EFFECT_INVERSE ? (ripple_effect_mode_t)mode
+  return mode <= RIPPLE_EFFECT_HEATMAP ? (ripple_effect_mode_t)mode
                                      : RIPPLE_EFFECT_STOCK;
 }
 

@@ -1,13 +1,13 @@
 # Keyball44 custom firmware
 
 This public, source-only repository builds custom Vial firmware for the
-KeebNERD Keyball44. It adds ripple, splash, inverse lighting, and reliable
-trackball scrolling while preserving the board's existing Vial, OLED, split,
-and pointing-device behavior.
+KeebNERD Keyball44. It adds ripple, splash, inverse, and per-key heatmap
+lighting plus reliable trackball scrolling while preserving the board's
+existing Vial, OLED, split, and pointing-device behavior.
 
 Generated firmware, tool builds, upstream checkouts, and private device
-backups are deliberately excluded from Git. No command in this repository
-flashes a keyboard.
+backups are deliberately excluded from Git. No build or setup target flashes a
+keyboard; flashing requires an explicit command and firmware filename.
 
 ## Safety
 

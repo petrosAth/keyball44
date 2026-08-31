@@ -29,13 +29,37 @@ static void test_event_packet_round_trip_retains_all_event_data(void) {
 
 static void test_state_packet_retains_mode_and_speed(void) {
   ripple_packet_t packet = {
-      .kind = RIPPLE_PACKET_STATE, .effect_mode = 3, .speed = 3};
-  assert(packet.effect_mode == 3);
+      .kind = RIPPLE_PACKET_STATE,
+      .effect_mode = 4,
+      .started_at = 0x87654321,
+      .speed = 3};
+  assert(packet.effect_mode == 4);
   assert(packet.speed == 3);
+  assert(packet.started_at == 0x87654321);
+  assert(sizeof(packet) == 12);
+}
+
+static void test_heatmap_event_retains_led_and_timestamp(void) {
+  ripple_packet_t sent = {.kind = RIPPLE_PACKET_EVENT,
+                          .effect_mode = 4,
+                          .started_at = 0x10203040,
+                          .speed = 1,
+                          .led_index = 31};
+  uint8_t wire[sizeof(sent)];
+  ripple_packet_t received;
+  memcpy(wire, &sent, sizeof(wire));
+  memcpy(&received, wire, sizeof(received));
+
+  assert(received.effect_mode == 4);
+  assert(received.started_at == 0x10203040);
+  assert(received.speed == 1);
+  assert(received.led_index == 31);
+  assert(sizeof(received) == 12);
 }
 
 int main(void) {
   test_event_packet_round_trip_retains_all_event_data();
   test_state_packet_retains_mode_and_speed();
+  test_heatmap_event_retains_led_and_timestamp();
   return 0;
 }
