@@ -3,6 +3,14 @@
 All notable user-visible changes to the custom Keyball44 firmware are recorded
 here. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.2.1] - 2026-09-02
+
+### Changed
+
+- Set the default trackball scrolling divider to `7`, a 1/64 movement
+  denominator. Explicit divider values saved in EEPROM remain unchanged; the
+  new default applies only when the stored configuration uses the `0` sentinel.
+
 ## [1.2.0] - 2026-09-01
 
 ### Added

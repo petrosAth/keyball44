@@ -125,7 +125,10 @@ and right local `0`–`28` offset by 30. The complete mapping remains recorded i
 Trackball scroll conversion retains sub-step movement between pointing-device
 reports. Higher scroll dividers therefore reduce sensitivity without dropping
 slow movements. Partial movement is cleared when scroll mode or its divider
-changes, preventing an old remainder from causing a later scroll step.
+changes, preventing an old remainder from causing a later scroll step. The
+keymap default divider is `7`, which uses a 1/64 movement denominator. An
+explicit divider saved in EEPROM is preserved; this default is used only when
+the stored configuration contains the `0` sentinel.
 
 Do not flash until the Vial export and both verified factory backups required by
 [recovery.md](recovery.md) exist. Validate the diagnostic sequence before the
@@ -134,11 +137,13 @@ indices must follow `LED1`–`LED29`. The hardware checklist covers the keys,
 trackball modes, OLEDs, Vial, stock-effect restoration, rapid keypresses, and
 split-link stability listed below.
 
-Hardware validation was reported successful on 2026-08-30 for the preceding
-ripple-only build. Version 1.2.0 remains unvalidated until the following have
-been checked on hardware:
+Apply the following checklist to every release candidate. Record completed and
+pending hardware validation in that version's changelog entry:
 
 - All 44 switches, including the five thumb-to-underglow fallbacks.
+- With the scroll divider configuration at its default `0` sentinel, confirm
+  that scrolling uses divider setting `7` (a 1/64 movement denominator), and
+  confirm that an explicit divider saved in EEPROM remains unchanged.
 - In heatmap mode, all 44 switches light only their mapped LED, including the
   five thumb-to-underglow fallbacks; unmapped LEDs remain dark.
 - Ten rapid presses reach 100% without an intervening decay, an eleventh press
