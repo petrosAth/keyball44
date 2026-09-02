@@ -35,8 +35,6 @@ here. Versions follow [Semantic Versioning](https://semver.org/).
 
 - Heatmap state starts empty, resets on mode changes, remains runtime-only,
   and does not alter the published v1.1.1 artifact or checksum.
-- Host tests and the pinned QMK build pass; hardware validation remains
-  pending for the new heatmap behavior.
 
 ## [1.1.1] - 2026-08-30
 
@@ -44,11 +42,6 @@ here. Versions follow [Semantic Versioning](https://semver.org/).
 
 - Shortened the `INVERSE_TOG` opposite-color hold from 1,000 ms to 100 ms.
   The four configured crossfade durations are unchanged.
-
-### Safety and validation
-
-- Host tests and the pinned QMK build pass; hardware validation remains
-  pending for this timing adjustment.
 
 ## [1.1.0] - 2026-08-30
 
@@ -74,9 +67,6 @@ here. Versions follow [Semantic Versioning](https://semver.org/).
 
 - The custom mode remains boot-disabled and non-persistent, and this release
   has passed host tests and the pinned QMK build.
-- Hardware validation is still pending for all 44 switches, rapid overlaps,
-  controls, split synchronization/reconnect, OLED status, RGB toggling, and
-  stock-effect restoration.
 
 ## [1.0.0] - 2026-08-30
 

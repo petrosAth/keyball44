@@ -1,41 +1,37 @@
 # Custom firmware
 
-The current release, generated after both diagnostic orientations were
-validated, is published as an attachment to the tagged `v1.1.1` GitHub
-release:
+## Releases
 
-```text
-Version: 1.1.1
-Artifact: keyball44-vial_right-custom-v1.1.1-41babbb8.uf2
-SHA-256: 87c6b571836612a5c1233737ec4261e9461699c09926b291ea13208f77357a39
-```
-
-This is the only copy of the digest in the repository; verify a download against
-the `SHA256SUMS` attached to the release. Release artifacts are built on Linux
-x86_64, so a local build on another platform will differ.
+Tagged firmware is available from
+[GitHub Releases](https://github.com/petrosAth/keyball44/releases). Download the
+UF2 and `SHA256SUMS` from the same tagged release, then verify the UF2 against
+that checksum file. The attached `SHA256SUMS` is the authoritative digest for
+its release. Release artifacts are built on Linux x86_64, so a local build on
+another platform will differ.
 
 Release artifacts use the name
 `keyball44-vial_right-custom-v<version>-<upstream-commit>.uf2`. The semantic
-version identifies this workspace's custom firmware release; the trailing
-commit identifies the pinned upstream Vial-QMK source. Increment the version
-for every distributed firmware change and add a corresponding entry to
-[CHANGELOG.md](../CHANGELOG.md). Do not replace an already released artifact
-without changing its version.
+version comes from [`VERSION`](../VERSION), and the trailing commit identifies
+the pinned upstream Vial-QMK source. `VERSION` describes the checked-out source;
+it does not indicate whether a matching release has been published. The
+[changelog](../CHANGELOG.md) records version-specific behavior and validation
+status.
 
-Version 1.2.0 is prepared in this workspace but has not been published or
-flashed. Its successful local build is named
-`keyball44-vial_right-custom-v1.2.0-41babbb8.uf2`. The v1.1.1 checksum above
-remains the authoritative checksum for that published release.
-
-The build script reads the release version from [`VERSION`](../VERSION). To
-prepare a release:
+To prepare and publish a release:
 
 1. Update `VERSION` using semantic versioning.
 2. Add a dated entry to `CHANGELOG.md` describing the firmware changes and its
    validation status.
-3. Run the complete test and build sequence below.
-4. Run `make release`, confirm the digest, tag the commit as `v<VERSION>`, and
-   publish the UF2 and `SHA256SUMS` as release attachments.
+3. Run `make test` and `make release`, then inspect the generated UF2 and
+   `dist/SHA256SUMS`.
+4. Commit the release preparation, create a `v<VERSION>` tag, and push the tag.
+5. Confirm the tagged GitHub Actions run succeeds and the resulting release
+   contains both the UF2 and `SHA256SUMS`.
+
+The tagged-release workflow requires the tag to equal `v` followed by the
+contents of `VERSION`. It fetches the pinned dependencies, runs the host tests,
+builds the release on Linux x86_64, and uploads both release assets. Never
+replace an existing release artifact without incrementing `VERSION`.
 
 Do not distribute or flash any artifact whose name contains
 `stale-left-orientation`. That obsolete build used an incorrect, unmirrored
@@ -56,8 +52,8 @@ make firmware
 
 This pinned Vial-QMK revision normally generates a random 24-bit build ID for
 each compile and uses it as the VIA EEPROM validity signature. The build shim
-pins v1.1.1 to its published ID, `0xF5E3B4`, so clean builds are reproducible
-and preserve the release's stored-layout compatibility.
+uses the fixed ID `0xF5E3B4` for custom builds, so clean builds are reproducible
+and preserve stored-layout compatibility across releases.
 
 The build corrects the physical LED count to 59 (`30` left and `29` right).
 Its positions come from the official PCB data recorded in

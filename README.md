@@ -92,10 +92,10 @@ image, follow the per-half backup and power-safety procedure in
 
 ## Releases
 
-Download firmware and `SHA256SUMS` together from the matching tagged GitHub
-release, and verify the firmware against that `SHA256SUMS`. The published
-digest for each release is recorded once, in
-[custom-firmware.md](docs/custom-firmware.md).
+Download firmware and `SHA256SUMS` together from the matching tagged
+[GitHub release](https://github.com/petrosAth/keyball44/releases), and verify
+the firmware against that checksum file. The attached `SHA256SUMS` is the
+authoritative digest for its release.
 
 Binaries are release attachments, not repository files. Older local builds
 and the obsolete stale-orientation diagnostic are not distributable because
