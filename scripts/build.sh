@@ -6,6 +6,8 @@ set -eu
 workspace=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 # shellcheck source=common.sh
 . "$workspace/scripts/common.sh"
+# shellcheck source=release-version.sh
+. "$workspace/scripts/release-version.sh"
 
 short_commit=$(printf '%.8s' "$VIAL_QMK_COMMIT")
 
@@ -16,11 +18,7 @@ case ${1-} in
         # build; the shim in scripts/qmk-python-compat pins it to the published
         # ID so clean builds stay reproducible and layout-compatible.
         build_id=0xF5E3B4
-        version=$(tr -d '\r\n' < "$workspace/VERSION")
-        if ! printf '%s\n' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-            echo "Refusing to build: VERSION must contain a semantic version (X.Y.Z)" >&2
-            exit 1
-        fi
+        version=$(read_release_version "$workspace/VERSION")
         artifact="$workspace/dist/keyball44-vial_right-custom-v${version}-${short_commit}.uf2"
         ;;
     diagnostic)

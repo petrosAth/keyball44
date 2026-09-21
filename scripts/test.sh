@@ -44,3 +44,4 @@ run_test ripple-sync \
     "$workspace/tests/ripple_sync_test.c" "$custom/ripple_sync.c"
 run_test scroll-accumulator \
     "$workspace/tests/scroll_accumulator_test.c" "$custom/scroll_accumulator.c"
+"$workspace/tests/release_version_test.sh"

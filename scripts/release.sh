@@ -6,10 +6,11 @@ set -eu
 workspace=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 # shellcheck source=common.sh
 . "$workspace/scripts/common.sh"
-version=$(tr -d '\r\n' < "$workspace/VERSION")
+# shellcheck source=release-version.sh
+. "$workspace/scripts/release-version.sh"
+version=$(read_release_version "$workspace/VERSION")
 
-# scripts/build.sh validates the version format; this only adds the release
-# precondition that the version is documented.
+# Require the validated version to be documented before building it.
 if ! grep -F "## [$version]" "$workspace/CHANGELOG.md" >/dev/null; then
     echo "Refusing release: CHANGELOG.md has no entry for $version" >&2
     exit 1
