@@ -3,6 +3,24 @@
 All notable user-visible changes to the custom Keyball44 firmware are recorded
 here. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.3.0-rc.1] - 2026-09-21
+
+### Changed
+
+- Enabled Auto Mouse by default for fresh or reset configuration, targeting
+  layer 1 with a 500 ms timeout. Explicit enablement and timeout values saved
+  in EEPROM remain authoritative across ordinary boots.
+- Set the default trackball scrolling divider to `6`, a 1/32 movement
+  denominator. Explicit divider values saved in EEPROM remain unchanged.
+- Updated `KBC_RST` to restore Auto Mouse enabled with its 500 ms timeout and
+  Div6 scrolling defaults.
+
+### Safety and validation
+
+- Host tests and the pinned QMK firmware build pass.
+- Hardware acceptance remains pending for the fresh/reset defaults, `KBC_RST`,
+  and persistence of deliberately saved overrides.
+
 ## [1.2.1] - 2026-09-02
 
 ### Changed

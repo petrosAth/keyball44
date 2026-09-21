@@ -42,6 +42,13 @@ static uint8_t ripple_speed;
 static ripple_sync_state_t ripple_sync;
 static scroll_accumulator_t scroll_accumulators[2][2];
 static uint8_t scroll_accumulator_div;
+static bool keyball_reset_pending;
+
+void eeconfig_init_user(void) {
+  keyball_config_t config = {.raw = 0};
+  config.amle = true;
+  eeconfig_update_kb(config.raw);
+}
 
 static void scroll_accumulators_reset(void) {
   for (uint8_t side = 0; side < 2; ++side) {
@@ -232,6 +239,11 @@ void keyboard_post_init_user(void) {
 }
 
 void housekeeping_task_user(void) {
+  if (keyball_reset_pending) {
+    set_auto_mouse_enable(true);
+    keyball_reset_pending = false;
+  }
+
   uint32_t now = timer_read32();
   if (is_keyboard_master() && ripple_sync_retry_due(&ripple_sync, now)) {
     ripple_send_state(now);
@@ -245,6 +257,10 @@ void housekeeping_task_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (keycode == KBC_RST && record->event.pressed) {
+    keyball_reset_pending = true;
+  }
+
   if (keycode == SCRL_MO || (keycode == SCRL_TO && record->event.pressed)) {
     scroll_accumulators_reset();
   }

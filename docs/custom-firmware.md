@@ -19,7 +19,8 @@ status.
 
 To prepare and publish a release:
 
-1. Update `VERSION` using semantic versioning.
+1. Update `VERSION` to a stable `X.Y.Z` version or a numbered release candidate
+   in the form `X.Y.Z-rc.N`, where `N` starts at 1.
 2. Add a dated entry to `CHANGELOG.md` describing the firmware changes and its
    validation status.
 3. Run `make test` and `make release`, then inspect the generated UF2 and
@@ -32,6 +33,12 @@ The tagged-release workflow requires the tag to equal `v` followed by the
 contents of `VERSION`. It fetches the pinned dependencies, runs the host tests,
 builds the release on Linux x86_64, and uploads both release assets. Never
 replace an existing release artifact without incrementing `VERSION`.
+
+Use numbered release candidates for hardware acceptance. For example, prepare
+`1.3.0-rc.1` and tag it as `v1.3.0-rc.1`; the tagged workflow publishes it as
+a GitHub prerelease. If acceptance finds a problem, increment the suffix for
+the next candidate. After acceptance, remove the suffix, prepare `1.3.0`, and
+tag `v1.3.0`; stable versions are published as normal GitHub releases.
 
 Do not distribute or flash any artifact whose name contains
 `stale-left-orientation`. That obsolete build used an incorrect, unmirrored
@@ -122,9 +129,16 @@ Trackball scroll conversion retains sub-step movement between pointing-device
 reports. Higher scroll dividers therefore reduce sensitivity without dropping
 slow movements. Partial movement is cleared when scroll mode or its divider
 changes, preventing an old remainder from causing a later scroll step. The
-keymap default divider is `7`, which uses a 1/64 movement denominator. An
+keymap default divider is `6`, which uses a 1/32 movement denominator. An
 explicit divider saved in EEPROM is preserved; this default is used only when
 the stored configuration contains the `0` sentinel.
+
+Auto Mouse is enabled by default for fresh or reset configuration. Pointing
+movement activates layer 1, and the layer is released after the default 500 ms
+timeout. Auto Mouse enablement, timeout, and the scroll divider are saved to
+EEPROM by `KBC_SAVE`; ordinary boots preserve those explicit settings,
+including Auto Mouse being saved off. `KBC_RST` restores Auto Mouse enabled,
+the 500 ms timeout, and the Div6 scroll default without saving them.
 
 Do not flash until the Vial export and both verified factory backups required by
 [recovery.md](recovery.md) exist. Validate the diagnostic sequence before the
@@ -137,9 +151,15 @@ Apply the following checklist to every release candidate. Record completed and
 pending hardware validation in that version's changelog entry:
 
 - All 44 switches, including the five thumb-to-underglow fallbacks.
-- With the scroll divider configuration at its default `0` sentinel, confirm
-  that scrolling uses divider setting `7` (a 1/64 movement denominator), and
-  confirm that an explicit divider saved in EEPROM remains unchanged.
+- With fresh or reset configuration, confirm that pointing movement activates
+  mouse layer 1, releases it after 500 ms, and that scrolling uses divider
+  setting `6` (a 1/32 movement denominator).
+- Change the Auto Mouse enablement, timeout, and scroll divider, press
+  `KBC_RST`, and confirm that Auto Mouse is enabled again with a 500 ms timeout
+  and Div6 scrolling.
+- Save Auto Mouse off with `KBC_SAVE`, reboot, and confirm that it remains off.
+  Also confirm that explicitly saved timeout and scroll-divider values remain
+  unchanged after reboot.
 - In heatmap mode, all 44 switches light only their mapped LED, including the
   five thumb-to-underglow fallbacks; unmapped LEDs remain dark.
 - Ten rapid presses reach 100% without an intervening decay, an eleventh press
