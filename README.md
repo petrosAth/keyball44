@@ -88,7 +88,8 @@ On Linux, install the upstream rule at
 `external/picotool/udev/60-picotool.rules` according to the operating system's
 udev policy if USB access would otherwise require root. Before loading any
 image, follow the per-half backup and power-safety procedure in
-[the recovery guide](docs/recovery.md).
+[the recovery guide](docs/recovery.md), then follow the
+[firmware installation guide](docs/install-firmware.md).
 
 ## Releases
 
@@ -107,6 +108,7 @@ their exact source states are unavailable or unsafe.
 - [Custom firmware behavior and validation](docs/custom-firmware.md)
 - [LED map provenance](docs/led-mapping.md) and [mapping data](docs/led-map.csv)
 - [Backup and recovery](docs/recovery.md)
+- [Firmware installation](docs/install-firmware.md)
 - [Changelog](CHANGELOG.md)
 - [Research sources](docs/sources.md)
 

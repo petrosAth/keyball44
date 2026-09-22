@@ -183,4 +183,4 @@ pending hardware validation in that version's changelog entry:
 
 No build, verification, or setup command flashes the keyboard automatically.
 Flashing requires an explicit `./scripts/picotool load` command and firmware
-filename as described in [recovery.md](recovery.md).
+filename as described in the [firmware installation guide](install-firmware.md).

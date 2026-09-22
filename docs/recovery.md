@@ -70,25 +70,11 @@ beginning, for the right half:
 Do not proceed if either backup cannot be read, verified, or unambiguously
 associated with its half.
 
-## Flash a tested image
+## Install a tested image
 
-1. Disconnect USB and TRRS.
-2. Put only the intended half in BOOTSEL mode and connect it by USB.
-3. Use `./scripts/picotool info -a` to confirm the device.
-4. Verify the UF2 checksum against the build manifest.
-5. Load with verification:
-
-   ```sh
-   ./scripts/picotool load -v dist/explicitly-named-image.uf2
-   ```
-
-6. Disconnect and reconnect USB to boot the application.
-7. Test that half as far as possible before disconnecting USB and repeating for
-   the other half.
-8. Reconnect TRRS only while both halves are unpowered, then connect USB.
-
-Never create a generic command that guesses the half or automatically chooses
-the newest UF2 file.
+After both halves have verified backups, follow the
+[firmware installation guide](install-firmware.md) to verify and install an
+explicitly named image.
 
 ## Restore a factory image
 

@@ -6,7 +6,8 @@
   releases, and links to detailed guides.
 - `device-profile.md` records exact hardware identity and compatibility limits.
 - `custom-firmware.md` describes current firmware behavior and validation.
-- `recovery.md` owns backup, flashing, and restoration procedures.
+- `install-firmware.md` owns image installation and flashing instructions.
+- `recovery.md` owns backup and restoration procedures.
 - `led-mapping.md` explains provenance and validation for `led-map.csv`.
 - `sources.md` records external evidence; prefer primary upstream sources.
 
