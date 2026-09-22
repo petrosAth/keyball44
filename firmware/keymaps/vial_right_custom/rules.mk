@@ -13,5 +13,6 @@ COMBO_ENABLE = yes
 KEY_OVERRIDE_ENABLE = yes
 
 SRC += heatmap_engine.c inverse_engine.c lighting_buffer.c lighting_driver.c \
-       lighting_fade.c lighting_fade_sync.c lighting_speed.c ripple_engine.c \
-       ripple_layout.c ripple_sync.c scroll_accumulator.c
+       lighting_fade.c lighting_fade_config.c lighting_fade_sync.c \
+       lighting_speed.c ripple_engine.c ripple_layout.c ripple_sync.c \
+       scroll_accumulator.c

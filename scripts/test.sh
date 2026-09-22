@@ -37,6 +37,9 @@ run_test lighting-speed \
     "$workspace/tests/lighting_speed_test.c" "$custom/lighting_speed.c"
 run_test lighting-fade \
     "$workspace/tests/lighting_fade_test.c" "$custom/lighting_fade.c"
+run_test lighting-fade-config \
+    "$workspace/tests/lighting_fade_config_test.c" \
+    "$custom/lighting_fade_config.c"
 run_test lighting-buffer \
     "$workspace/tests/lighting_buffer_test.c" "$custom/lighting_buffer.c"
 run_test lighting-fade-sync \

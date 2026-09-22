@@ -3,6 +3,13 @@
 All notable user-visible changes to the custom Keyball44 firmware are recorded
 here. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.4.1-rc.1] - 2026-09-22
+
+### Changed
+
+- Added an assignable Vial User-tab keycode for toggling Auto Mouse lighting
+  fades. Fading now defaults off and can be persisted with `KBC_SAVE`.
+
 ## [1.4.0-rc.1] - 2026-09-22
 
 ### Changed

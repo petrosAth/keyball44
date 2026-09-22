@@ -69,13 +69,13 @@ position, including thumb keys without a key LED. The coordinate model assumes
 a nominal 19.05 mm gap between the inner key centers; edit the documented
 translation in `ripple_layout.c` if a different fixed placement is preferred.
 
-`RIPPLE_TOG`, `SPLASH_TOG`, `INVERSE_TOG`, and `HEATMAP_TOG` appear under
-Vial's custom keycodes. Assign them to any keys on any layer. All custom modes
-start disabled on every boot, are never written to EEPROM, and return to the
-current stock RGBLight mode when the active effect is toggled off. Pressing
-another custom effect's toggle switches directly to it and clears all custom
-effect state. The OLED shows `RIP`, `SPL`, `INV`, or `HMP` for the active
-custom mode.
+`RIPPLE_TOG`, `SPLASH_TOG`, `INVERSE_TOG`, `HEATMAP_TOG`, and the Auto Mouse
+fade toggle appear under Vial's User keycodes. Assign them to any keys on any
+layer. All custom modes start disabled on every boot, are never written to
+EEPROM, and return to the current stock RGBLight mode when the active effect is
+toggled off. Pressing another custom effect's toggle switches directly to it
+and clears all custom effect state. The OLED shows `RIP`, `SPL`, `INV`, or
+`HMP` for the active custom mode.
 
 Ripple remains the existing hollow travelling ring. Splash produces a filled,
 rapidly expanding bloom with a full-brightness core about one key pitch wide,
@@ -140,12 +140,20 @@ EEPROM by `KBC_SAVE`; ordinary boots preserve those explicit settings,
 including Auto Mouse being saved off. `KBC_RST` restores Auto Mouse enabled,
 the 500 ms timeout, and the Div6 scroll default without saving them.
 
-While Auto Mouse is enabled and its configured mouse layer is active, all 59
-keyboard LEDs fade linearly to black over 250 ms. They remain suppressed until
-that layer is released, including through the existing 500 ms inactivity
-timeout, then restore over 250 ms. The layer's bit is followed even when a
-higher layer is also active. Disabling Auto Mouse releases the suppression.
-Rapid reactivation reverses from the current brightness without a jump.
+Auto Mouse lighting fades default to disabled for fresh, reset, upgraded, or
+otherwise unrecognized user configuration. Assign `Auto Mouse Fade Toggle`
+from Vial's User tab to a key to enable or disable them. `KBC_SAVE` persists
+the current setting, while `KBC_RST` restores the disabled default without
+saving it. Vial provides the assignable keycode but does not display its
+current state.
+
+When the fade setting and Auto Mouse are enabled and the configured mouse layer
+is active, all 59 keyboard LEDs fade linearly to black over 250 ms. They remain
+suppressed until that layer is released, including through the existing 500 ms
+inactivity timeout, then restore over 250 ms. The layer's bit is followed even
+when a higher layer is also active. Disabling either the fade setting or Auto
+Mouse releases the suppression. Rapid reactivation or toggling reverses from
+the current brightness without a jump.
 Stock RGBLight and every custom effect continue running while suppressed, so
 the restore uses their current output and live hue, saturation, brightness,
 speed, effect, and enable state. Lighting that the user switches off remains
@@ -164,11 +172,16 @@ Apply the following checklist to every release candidate. Record completed and
 pending hardware validation in that version's changelog entry:
 
 - All 44 switches, including the five thumb-to-underglow fallbacks.
-- With fresh or reset configuration, confirm that pointing movement activates
-  mouse layer 1, fades stock and custom lighting to black in 250 ms, releases
-  the layer after 500 ms, restores lighting in 250 ms, and that scrolling uses
-  divider setting `6` (a 1/32 movement denominator). Confirm both halves stay
-  synchronized.
+- With fresh, upgraded, or reset configuration, confirm that pointing movement
+  activates mouse layer 1 without fading, releases it after 500 ms, and that
+  scrolling uses divider setting `6` (a 1/32 movement denominator).
+- Assign `Auto Mouse Fade Toggle` from Vial's User tab, enable it, and confirm
+  stock and custom lighting fade to black in 250 ms on mouse-layer activation,
+  restore in 250 ms on release, and stay synchronized across both halves.
+- Save the enabled setting with `KBC_SAVE`, reboot, and confirm that it remains
+  enabled. Toggle without saving and confirm that reboot restores the last
+  saved setting. Press `KBC_RST` and confirm fading becomes disabled without
+  overwriting the saved setting.
 - Reactivate Auto Mouse during either fade and confirm the direction reverses
   smoothly from the current brightness. Confirm that a higher active layer
   does not restore lighting while the configured mouse-layer bit remains set.

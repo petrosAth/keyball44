@@ -18,5 +18,6 @@
   {"name":"Ripple Toggle","title":"Toggle the non-persistent keypress ripple","shortName":"RIPPLE_TOG"},
   {"name":"Splash Toggle","title":"Toggle the non-persistent keypress splash","shortName":"SPLASH_TOG"},
   {"name":"Inverse Toggle","title":"Toggle opposite-color keypress holds and fades","shortName":"INVERSE_TOG"},
-  {"name":"Heatmap Toggle","title":"Toggle the non-persistent per-key heatmap","shortName":"HEATMAP_TOG"}
+  {"name":"Heatmap Toggle","title":"Toggle the non-persistent per-key heatmap","shortName":"HEATMAP_TOG"},
+  {"name":"Auto Mouse Fade Toggle","title":"Toggle lighting fades on the automatic mouse layer","shortName":"AM Fade"}
 ]

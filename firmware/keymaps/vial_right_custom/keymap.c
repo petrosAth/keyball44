@@ -17,6 +17,7 @@
 #include "inverse_engine.h"
 #include "lighting_driver.h"
 #include "lighting_fade.h"
+#include "lighting_fade_config.h"
 #include "lighting_fade_sync.h"
 #include "lighting_speed.h"
 #include "rgblight.h"
@@ -33,6 +34,7 @@
 #define SPLASH_TOG QK_KB_17
 #define INVERSE_TOG QK_KB_18
 #define HEATMAP_TOG QK_KB_19
+#define AUTO_MOUSE_FADE_TOG QK_KB_20
 #define RIPPLE_FRAME_INTERVAL_MS 16
 #define LIGHTING_FADE_FRAME_INTERVAL_MS 16
 
@@ -48,6 +50,7 @@ static lighting_fade_t lighting_fade;
 static lighting_fade_sync_t lighting_fade_sync;
 static uint32_t lighting_fade_last_frame;
 static bool lighting_fade_suppressed;
+static bool lighting_fade_enabled;
 static scroll_accumulator_t scroll_accumulators[2][2];
 static uint8_t scroll_accumulator_div;
 static bool keyball_reset_pending;
@@ -56,6 +59,7 @@ void eeconfig_init_user(void) {
   keyball_config_t config = {.raw = 0};
   config.amle = true;
   eeconfig_update_kb(config.raw);
+  eeconfig_update_user(lighting_fade_config_encode(false));
 }
 
 static void scroll_accumulators_reset(void) {
@@ -225,7 +229,7 @@ static bool lighting_fade_should_suppress(void) {
   uint8_t layer = get_auto_mouse_layer();
   bool layer_active = layer < sizeof(layer_state_t) * 8 &&
                       (layer_state & ((layer_state_t)1 << layer)) != 0;
-  return get_auto_mouse_enable() && layer_active;
+  return lighting_fade_enabled && get_auto_mouse_enable() && layer_active;
 }
 
 static void ripple_render(void) {
@@ -288,6 +292,8 @@ void keyboard_post_init_user(void) {
   lighting_fade_sync_init(&lighting_fade_sync, &lighting_fade);
   lighting_fade_last_frame = ripple_speed_changed_at;
   lighting_fade_suppressed = false;
+  lighting_fade_enabled =
+      lighting_fade_config_enabled(eeconfig_read_user());
   if (!is_keyboard_master()) {
     transaction_register_rpc(RIPPLE_EVENT_TRANSACTION, ripple_receive);
     transaction_register_rpc(LIGHTING_FADE_TRANSACTION,
@@ -333,6 +339,11 @@ void housekeeping_task_user(void) {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (keycode == KBC_RST && record->event.pressed) {
     keyball_reset_pending = true;
+    lighting_fade_enabled = false;
+  }
+
+  if (keycode == KBC_SAVE && record->event.pressed) {
+    eeconfig_update_user(lighting_fade_config_encode(lighting_fade_enabled));
   }
 
   if (keycode == SCRL_MO || (keycode == SCRL_TO && record->event.pressed)) {
@@ -341,6 +352,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   if (!record->event.pressed) {
     return true;
+  }
+
+  if (keycode == AUTO_MOUSE_FADE_TOG) {
+    lighting_fade_enabled = !lighting_fade_enabled;
+    return false;
   }
 
   if (keycode == RIPPLE_TOG || keycode == SPLASH_TOG ||
