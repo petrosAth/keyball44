@@ -3,7 +3,7 @@
 All notable user-visible changes to the custom Keyball44 firmware are recorded
 here. Versions follow [Semantic Versioning](https://semver.org/).
 
-## [1.3.0-rc.1] - 2026-09-21
+## [1.3.0] - 2026-09-22
 
 ### Changed
 
@@ -18,8 +18,9 @@ here. Versions follow [Semantic Versioning](https://semver.org/).
 ### Safety and validation
 
 - Host tests and the pinned QMK firmware build pass.
-- Hardware acceptance remains pending for the fresh/reset defaults, `KBC_RST`,
-  and persistence of deliberately saved overrides.
+- The full release-candidate hardware validation checklist passed, including
+  fresh/reset defaults, `KBC_RST` restoration, persistence of deliberately
+  saved overrides, and existing lighting and split behavior.
 
 ## [1.2.1] - 2026-09-02
 

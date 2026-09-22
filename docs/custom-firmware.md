@@ -35,10 +35,10 @@ builds the release on Linux x86_64, and uploads both release assets. Never
 replace an existing release artifact without incrementing `VERSION`.
 
 Use numbered release candidates for hardware acceptance. For example, prepare
-`1.3.0-rc.1` and tag it as `v1.3.0-rc.1`; the tagged workflow publishes it as
+`X.Y.Z-rc.N` and tag it as `vX.Y.Z-rc.N`; the tagged workflow publishes it as
 a GitHub prerelease. If acceptance finds a problem, increment the suffix for
-the next candidate. After acceptance, remove the suffix, prepare `1.3.0`, and
-tag `v1.3.0`; stable versions are published as normal GitHub releases.
+the next candidate. After acceptance, remove the suffix, prepare `X.Y.Z`, and
+tag `vX.Y.Z`; stable versions are published as normal GitHub releases.
 
 Do not distribute or flash any artifact whose name contains
 `stale-left-orientation`. That obsolete build used an incorrect, unmirrored
