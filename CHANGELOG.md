@@ -3,6 +3,20 @@
 All notable user-visible changes to the custom Keyball44 firmware are recorded
 here. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.4.0-rc.1] - 2026-09-22
+
+### Changed
+
+- Added a synchronized 250 ms lighting fade when Auto Mouse activates or
+  deactivates, covering stock and custom effects on both keyboard halves.
+- Added a custom RGBLight buffer and dedicated split synchronization so both
+  halves render the transition consistently.
+
+### Safety and validation
+
+- Host tests and the pinned QMK firmware build pass.
+- Hardware acceptance is pending.
+
 ## [1.3.0] - 2026-09-22
 
 ### Changed

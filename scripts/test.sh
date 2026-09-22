@@ -35,6 +35,13 @@ run_test ledmap-diag \
     "$workspace/tests/ledmap_diag_state_test.c" "$ledmap/ledmap_diag_state.c"
 run_test lighting-speed \
     "$workspace/tests/lighting_speed_test.c" "$custom/lighting_speed.c"
+run_test lighting-fade \
+    "$workspace/tests/lighting_fade_test.c" "$custom/lighting_fade.c"
+run_test lighting-buffer \
+    "$workspace/tests/lighting_buffer_test.c" "$custom/lighting_buffer.c"
+run_test lighting-fade-sync \
+    "$workspace/tests/lighting_fade_sync_test.c" "$custom/lighting_fade.c" \
+    "$custom/lighting_fade_sync.c"
 run_test ripple-engine \
     "$workspace/tests/ripple_engine_test.c" "$custom/ripple_engine.c" \
     "$custom/ripple_layout.c"

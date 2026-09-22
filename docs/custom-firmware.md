@@ -140,6 +140,19 @@ EEPROM by `KBC_SAVE`; ordinary boots preserve those explicit settings,
 including Auto Mouse being saved off. `KBC_RST` restores Auto Mouse enabled,
 the 500 ms timeout, and the Div6 scroll default without saving them.
 
+While Auto Mouse is enabled and its configured mouse layer is active, all 59
+keyboard LEDs fade linearly to black over 250 ms. They remain suppressed until
+that layer is released, including through the existing 500 ms inactivity
+timeout, then restore over 250 ms. The layer's bit is followed even when a
+higher layer is also active. Disabling Auto Mouse releases the suppression.
+Rapid reactivation reverses from the current brightness without a jump.
+Stock RGBLight and every custom effect continue running while suppressed, so
+the restore uses their current output and live hue, saturation, brightness,
+speed, effect, and enable state. Lighting that the user switches off remains
+off. A separate six-byte split update synchronizes each transition; failed
+updates retry every 16 ms and a two-second heartbeat recovers a reset or
+reconnected half without changing RGBLight EEPROM settings.
+
 Do not flash until the Vial export and both verified factory backups required by
 [recovery.md](recovery.md) exist. Validate the diagnostic sequence before the
 final image: left local indices must follow PCB `LED1`–`LED30`, and right local
@@ -152,8 +165,17 @@ pending hardware validation in that version's changelog entry:
 
 - All 44 switches, including the five thumb-to-underglow fallbacks.
 - With fresh or reset configuration, confirm that pointing movement activates
-  mouse layer 1, releases it after 500 ms, and that scrolling uses divider
-  setting `6` (a 1/32 movement denominator).
+  mouse layer 1, fades stock and custom lighting to black in 250 ms, releases
+  the layer after 500 ms, restores lighting in 250 ms, and that scrolling uses
+  divider setting `6` (a 1/32 movement denominator). Confirm both halves stay
+  synchronized.
+- Reactivate Auto Mouse during either fade and confirm the direction reverses
+  smoothly from the current brightness. Confirm that a higher active layer
+  does not restore lighting while the configured mouse-layer bit remains set.
+- While lighting is dark, change the RGB enable state, brightness, and effect;
+  confirm the latest live state is restored, and that lighting switched off
+  manually remains off. Disable Auto Mouse while suppressed and confirm the
+  lights restore.
 - Change the Auto Mouse enablement, timeout, and scroll divider, press
   `KBC_RST`, and confirm that Auto Mouse is enabled again with a 500 ms timeout
   and Div6 scrolling.

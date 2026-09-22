@@ -15,6 +15,9 @@
 #include "lib/oledkit/oledkit.h"
 #include "heatmap_engine.h"
 #include "inverse_engine.h"
+#include "lighting_driver.h"
+#include "lighting_fade.h"
+#include "lighting_fade_sync.h"
 #include "lighting_speed.h"
 #include "rgblight.h"
 #include "rgblight_drivers.h"
@@ -31,6 +34,7 @@
 #define INVERSE_TOG QK_KB_18
 #define HEATMAP_TOG QK_KB_19
 #define RIPPLE_FRAME_INTERVAL_MS 16
+#define LIGHTING_FADE_FRAME_INTERVAL_MS 16
 
 static ripple_engine_t ripple_engine;
 static inverse_engine_t inverse_engine;
@@ -40,6 +44,10 @@ static uint32_t ripple_last_frame;
 static uint32_t ripple_speed_changed_at;
 static uint8_t ripple_speed;
 static ripple_sync_state_t ripple_sync;
+static lighting_fade_t lighting_fade;
+static lighting_fade_sync_t lighting_fade_sync;
+static uint32_t lighting_fade_last_frame;
+static bool lighting_fade_suppressed;
 static scroll_accumulator_t scroll_accumulators[2][2];
 static uint8_t scroll_accumulator_div;
 static bool keyball_reset_pending;
@@ -163,6 +171,13 @@ static void ripple_receive(uint8_t input_size, const void *input,
   }
 }
 
+static void lighting_fade_receive(uint8_t input_size, const void *input,
+                                  uint8_t output_size, void *output) {
+  (void)output_size;
+  (void)output;
+  (void)lighting_fade_sync_receive(&lighting_fade, input_size, input);
+}
+
 static bool ripple_send(const ripple_packet_t *packet) {
   return is_keyboard_master() &&
          transaction_rpc_send(RIPPLE_EVENT_TRANSACTION, sizeof(*packet),
@@ -175,6 +190,42 @@ static void ripple_send_state(uint32_t now) {
                             .started_at = ripple_speed_changed_at,
                             .speed = ripple_speed};
   ripple_sync_record_attempt(&ripple_sync, now, ripple_send(&packet));
+}
+
+static bool lighting_fade_send(void) {
+  return is_keyboard_master() &&
+         transaction_rpc_send(LIGHTING_FADE_TRANSACTION,
+                              sizeof(lighting_fade_sync.packet),
+                              &lighting_fade_sync.packet);
+}
+
+static void lighting_fade_send_state(uint32_t now) {
+  lighting_fade_sync_record_attempt(&lighting_fade_sync, now,
+                                    lighting_fade_send());
+}
+
+static void lighting_fade_refresh(uint32_t now) {
+  bool transitioning = lighting_fade_is_transitioning(&lighting_fade, now);
+  uint8_t brightness = lighting_fade_brightness(&lighting_fade, now);
+  if (transitioning &&
+      now - lighting_fade_last_frame < LIGHTING_FADE_FRAME_INTERVAL_MS) {
+    return;
+  }
+  if (!transitioning &&
+      brightness == lighting_driver_get_brightness()) {
+    return;
+  }
+
+  lighting_fade_last_frame = now;
+  lighting_driver_set_brightness(brightness);
+  lighting_driver_refresh();
+}
+
+static bool lighting_fade_should_suppress(void) {
+  uint8_t layer = get_auto_mouse_layer();
+  bool layer_active = layer < sizeof(layer_state_t) * 8 &&
+                      (layer_state & ((layer_state_t)1 << layer)) != 0;
+  return get_auto_mouse_enable() && layer_active;
 }
 
 static void ripple_render(void) {
@@ -233,8 +284,14 @@ void keyboard_post_init_user(void) {
       lighting_speed_from_mode(rgblight_get_mode(), rgblight_get_speed());
   ripple_speed_changed_at = sync_timer_read32();
   ripple_sync_init(&ripple_sync);
+  lighting_fade_init(&lighting_fade, ripple_speed_changed_at);
+  lighting_fade_sync_init(&lighting_fade_sync, &lighting_fade);
+  lighting_fade_last_frame = ripple_speed_changed_at;
+  lighting_fade_suppressed = false;
   if (!is_keyboard_master()) {
     transaction_register_rpc(RIPPLE_EVENT_TRANSACTION, ripple_receive);
+    transaction_register_rpc(LIGHTING_FADE_TRANSACTION,
+                             lighting_fade_receive);
   }
 }
 
@@ -244,10 +301,27 @@ void housekeeping_task_user(void) {
     keyball_reset_pending = false;
   }
 
-  uint32_t now = timer_read32();
-  if (is_keyboard_master() && ripple_sync_retry_due(&ripple_sync, now)) {
-    ripple_send_state(now);
+  uint32_t local_now = timer_read32();
+  uint32_t synced_now = sync_timer_read32();
+  if (is_keyboard_master()) {
+    bool suppress = lighting_fade_should_suppress();
+    if (suppress != lighting_fade_suppressed) {
+      lighting_fade_suppressed = suppress;
+      (void)lighting_fade_set_target(
+          &lighting_fade,
+          suppress ? LIGHTING_FADE_DARK : LIGHTING_FADE_FULL, synced_now);
+      lighting_fade_sync_set_transition(&lighting_fade_sync, &lighting_fade);
+      lighting_fade_last_frame = synced_now - LIGHTING_FADE_FRAME_INTERVAL_MS;
+      lighting_fade_send_state(local_now);
+    }
+    if (lighting_fade_sync_send_due(&lighting_fade_sync, local_now)) {
+      lighting_fade_send_state(local_now);
+    }
+    if (ripple_sync_retry_due(&ripple_sync, local_now)) {
+      ripple_send_state(local_now);
+    }
   }
+  lighting_fade_refresh(synced_now);
   if (ripple_effect_mode == RIPPLE_EFFECT_STOCK ||
       timer_elapsed32(ripple_last_frame) < RIPPLE_FRAME_INTERVAL_MS) {
     return;

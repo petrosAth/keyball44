@@ -1,4 +1,6 @@
 RGBLIGHT_ENABLE = yes
+RGBLIGHT_DRIVER = custom
+WS2812_DRIVER_REQUIRED = yes
 OLED_ENABLE = yes
 
 VIA_ENABLE = yes
@@ -10,5 +12,6 @@ TAP_DANCE_ENABLE = yes
 COMBO_ENABLE = yes
 KEY_OVERRIDE_ENABLE = yes
 
-SRC += heatmap_engine.c inverse_engine.c lighting_speed.c ripple_engine.c \
+SRC += heatmap_engine.c inverse_engine.c lighting_buffer.c lighting_driver.c \
+       lighting_fade.c lighting_fade_sync.c lighting_speed.c ripple_engine.c \
        ripple_layout.c ripple_sync.c scroll_accumulator.c
