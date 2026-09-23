@@ -25,7 +25,8 @@ To prepare and publish a release:
    validation status.
 3. Run `make test` and `make release`, then inspect the generated UF2 and
    `dist/SHA256SUMS`.
-4. Commit the release preparation, create a `v<VERSION>` tag, and push the tag.
+4. Commit the release preparation, create a `v<VERSION>` tag using the
+   [release tag message guide](tag-messages.md), and push the tag.
 5. Confirm the tagged GitHub Actions run succeeds and the resulting release
    contains both the UF2 and `SHA256SUMS`.
 

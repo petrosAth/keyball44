@@ -23,6 +23,7 @@ __pycache__/
 *.py[cod]
 
 # Local configuration and editor debris
+TAG_MESSAGE.md
 .env
 .env.*
 !.env.example
