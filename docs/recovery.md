@@ -1,46 +1,35 @@
 # Backup and recovery procedure
 
-This is the mandatory safety gate before modifying either half. Commands are
-shown through the repository wrapper for its pinned official Raspberry Pi
-`picotool` build. Install and verify it before connecting a keyboard:
+This is the mandatory safety gate before modifying either half. Commands are shown through the repository wrapper for its pinned official Raspberry Pi `picotool` build. Install and verify it before connecting a keyboard:
 
 ```sh
 make setup-picotool
 ./scripts/picotool version
 ```
 
-The setup requires a C++ compiler, `pkg-config`, and the libusb-1.0 development
-files. On Linux, install `external/picotool/udev/60-picotool.rules` according to
-the operating system's udev policy if the device is not accessible as the
-current user.
+The setup requires a C++ compiler, `pkg-config`, and the libusb-1.0 development files. On Linux, install `external/picotool/udev/60-picotool.rules` according to the operating system's udev policy if the device is not accessible as the current user.
 
 ## Non-negotiable rules
 
 - Never insert or remove TRRS while USB is connected to either half.
 - Back up and flash only one half at a time, with TRRS disconnected.
-- Never use a firmware image unless its provenance, target, and checksum are
-  known.
+- Never use a firmware image unless its provenance, target, and checksum are known.
 - Do not use `/dev/hidraw9` as a stable device identifier.
 - Keep factory images private and outside version control.
 
-Set `KEYBALL44_PRIVATE_BACKUP_DIR` to a directory on encrypted storage outside
-the repository. Do not place irreplaceable recovery material in `backups/`
-inside a clone, even though that path is ignored as a final safety net.
+Set `KEYBALL44_PRIVATE_BACKUP_DIR` to a directory on encrypted storage outside the repository. Do not place irreplaceable recovery material in `backups/` inside a clone, even though that path is ignored as a final safety net.
 
 ## Export Vial state
 
-Before entering BOOTSEL, use Vial's Save function to export the current layout.
-Store the export next to the private backups and record a checksum for it.
+Before entering BOOTSEL, use Vial's Save function to export the current layout. Store the export next to the private backups and record a checksum for it.
 
 ## Back up each half
 
-Perform the following sequence first for the left half and then, from the
-beginning, for the right half:
+Perform the following sequence first for the left half and then, from the beginning, for the right half:
 
 1. Disconnect USB from the entire keyboard.
 2. Disconnect the TRRS cable.
-3. Enter the selected half's RP2040 BOOTSEL mode using its hardware BOOTSEL
-   method while connecting only that half by USB.
+3. Enter the selected half's RP2040 BOOTSEL mode using its hardware BOOTSEL method while connecting only that half by USB.
 4. Confirm exactly one RP2040 device is visible:
 
    ```sh
@@ -63,18 +52,14 @@ beginning, for the right half:
    sha256sum "$KEYBALL44_PRIVATE_BACKUP_DIR/right-factory.uf2"
    ```
 
-7. Record `./scripts/picotool info -a` output, the filename, half, file size,
-   date, and SHA-256 digest in a private backup manifest.
+7. Record `./scripts/picotool info -a` output, the filename, half, file size, date, and SHA-256 digest in a private backup manifest.
 8. Disconnect USB before moving to the other half or reconnecting TRRS.
 
-Do not proceed if either backup cannot be read, verified, or unambiguously
-associated with its half.
+Do not proceed if either backup cannot be read, verified, or unambiguously associated with its half.
 
 ## Install a tested image
 
-After both halves have verified backups, follow the
-[firmware installation guide](install-firmware.md) to verify and install an
-explicitly named image.
+After both halves have verified backups, follow the [firmware installation guide](install-firmware.md) to verify and install an explicitly named image.
 
 ## Restore a factory image
 
@@ -92,12 +77,8 @@ If a custom build behaves unexpectedly:
 
    Run only the command matching the connected half.
 
-5. Power-cycle that half, then repeat the complete procedure for the other
-   half.
+5. Power-cycle that half, then repeat the complete procedure for the other half.
 6. With both halves unpowered, reconnect TRRS and then USB.
-7. Reopen Vial and reload the exported layout only if the stored configuration
-   was lost or reset.
+7. Reopen Vial and reload the exported layout only if the stored configuration was lost or reset.
 
-The RP2040's BOOTSEL loader resides in read-only ROM. A broken keyboard
-application normally cannot overwrite it, so BOOTSEL remains the recovery path
-for a non-booting application image.
+The RP2040's BOOTSEL loader resides in read-only ROM. A broken keyboard application normally cannot overwrite it, so BOOTSEL remains the recovery path for a non-booting application image.

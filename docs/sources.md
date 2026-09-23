@@ -1,8 +1,6 @@
 # Research sources
 
-Access dates and branch heads change. Firmware work must use the revisions in
-[`dependencies.lock`](../dependencies.lock), not whichever commits branch
-names point to later.
+Access dates and branch heads change. Firmware work must use the revisions in [`dependencies.lock`](../dependencies.lock), not whichever commits branch names point to later.
 
 ## Exact device source
 
@@ -22,9 +20,7 @@ The source strings, VID/PID, and Vial UID match the connected keyboard.
 - [QMK RGB Matrix animation library](https://github.com/qmk/qmk_firmware/tree/master/quantum/rgb_matrix/animations)
 - [QMK Solid Splash implementation](https://github.com/qmk/qmk_firmware/blob/master/quantum/rgb_matrix/animations/solid_splash_anim.h)
 
-The RGB Matrix sources are references for animation mathematics only. The
-matching KeebNERD firmware says RGB Matrix does not work for this board; the
-custom animation must remain on RGBLight.
+The RGB Matrix sources are references for animation mathematics only. The matching KeebNERD firmware says RGB Matrix does not work for this board; the custom animation must remain on RGBLight.
 
 ## Hardware and recovery references
 
@@ -36,10 +32,7 @@ custom animation must remain on RGBLight.
 - [Raspberry Pi microcontroller documentation](https://www.raspberrypi.com/documentation/microcontrollers/)
 - [Arch Linux QMK package](https://archlinux.org/packages/extra/any/qmk/)
 
-The LED map uses the pinned official KiCad PCB and netlist archives. The design
-data is authoritative for physical geometry and serial routing; it is not a
-substitute for the exact KeebNERD firmware source used to build the
-application.
+The LED map uses the pinned official KiCad PCB and netlist archives. The design data is authoritative for physical geometry and serial routing; it is not a substitute for the exact KeebNERD firmware source used to build the application.
 
 ## Product and comparison references
 
@@ -47,6 +40,4 @@ application.
 - [Holykeebs Keyball44 product page](https://holykeebs.com/products/keyball44)
 - [Holykeebs firmware documentation](https://docs.holykeebs.com/firmware/)
 
-Holykeebs firmware is a separate implementation and must not be flashed to this
-KeebNERD board. Similar appearance and Vial support do not establish electrical
-or pin compatibility.
+Holykeebs firmware is a separate implementation and must not be flashed to this KeebNERD board. Similar appearance and Vial support do not establish electrical or pin compatibility.
