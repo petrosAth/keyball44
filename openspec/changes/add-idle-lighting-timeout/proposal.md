@@ -45,5 +45,7 @@ way to get it.
 - New host test registered in `scripts/test.sh`.
 - `docs/custom-firmware.md`: describes the behavior and adds hardware
   verification steps.
+- `CHANGELOG.md`: new `1.5.0-rc.1` entry with the validation status. `VERSION`
+  is already set to `1.5.0-rc.1`.
 - No change to the split wire protocol, Vial keycodes, EEPROM layout, or the
   diagnostic keymap.

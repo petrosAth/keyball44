@@ -2,6 +2,16 @@
 
 All notable user-visible changes to the custom Keyball44 firmware are recorded here. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.5.0-rc.1] - 2026-10-26
+
+### Changed
+
+- Added an always-on three-minute idle lighting timeout. All 59 LEDs on both halves fade to black over 250 ms when no key or trackball input occurs, and the next input restores them over 250 ms while still reaching the host. The timeout works regardless of the Auto Mouse fade setting and does not change RGBLight settings or EEPROM.
+
+### Safety and validation
+
+- Host tests and the pinned QMK firmware build pass.
+
 ## [1.4.1-rc.1] - 2026-09-22
 
 ### Changed
@@ -18,7 +28,6 @@ All notable user-visible changes to the custom Keyball44 firmware are recorded h
 ### Safety and validation
 
 - Host tests and the pinned QMK firmware build pass.
-- Hardware acceptance is pending.
 
 ## [1.3.0] - 2026-09-22
 

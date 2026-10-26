@@ -14,8 +14,12 @@
 ## 3. Integration checks
 
 - [x] 3.1 Run `make test` and `make firmware` from a clean state and verify both succeed. Do not flash as part of this task.
-- [ ] 3.2 After the user manually flashes both halves, run the new hardware checklist items from `docs/custom-firmware.md` and record the results (pass, or pending hardware validation) for the next changelog entry.
+- [x] 3.2 Add a `## [1.5.0-rc.1] - 2026-10-26` entry at the top of `CHANGELOG.md`, matching `VERSION`. Under `### Changed`, describe the always-on idle timeout: all LEDs on both halves fade to black over 250 ms after three minutes without key or trackball input, the next input restores them and is still sent to the host, it does not depend on the Auto Mouse fade setting, and it leaves RGBLight settings and EEPROM unchanged. Under `### Safety and validation`, state that host tests and the pinned QMK firmware build pass, with no hardware validation line until task 3.3. Verify the entry follows the existing entry format and `git diff --check` is clean.
+- [x] 3.3 Write `TAG_MESSAGE.md` in the repository root following `docs/tag-messages.md`: first line `v1.5.0-rc.1: <summary>`, a `Changed:` section summarizing the `1.5.0-rc.1` changelog entry, a `Safety and validation:` section stating that host tests and the pinned QMK firmware build pass and that hardware acceptance remains pending, and `Full history: CHANGELOG.md`, with prose wrapped to match. Verify there are no unfilled placeholders, the version matches `VERSION`, and `git status` does not show the file (it is ignored).
+- [ ] 3.4 After the user manually flashes both halves, run the new hardware checklist items from `docs/custom-firmware.md` and add the results to the `1.5.0-rc.1` validation section of `CHANGELOG.md`: pass, or which checks are still outstanding. Verify the entry does not claim hardware acceptance while any required check is outstanding.
 
 ## Workflow follow-up
 
+- Commit the release preparation (`VERSION`, `CHANGELOG.md`), run `make test` and `make release`, and inspect the UF2 and `dist/SHA256SUMS`.
+- Create the signed tag with `git tag -s "v$(cat VERSION)" -F TAG_MESSAGE.md`, push that tag explicitly, confirm the GitHub Actions release succeeds, then delete `TAG_MESSAGE.md`.
 - Archive the change with `/opsx:archive` after hardware validation and review.
