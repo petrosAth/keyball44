@@ -19,6 +19,7 @@
 #include "lighting_fade.h"
 #include "lighting_fade_config.h"
 #include "lighting_fade_sync.h"
+#include "lighting_idle.h"
 #include "lighting_speed.h"
 #include "rgblight.h"
 #include "rgblight_drivers.h"
@@ -51,6 +52,7 @@ static lighting_fade_sync_t lighting_fade_sync;
 static uint32_t lighting_fade_last_frame;
 static bool lighting_fade_suppressed;
 static bool lighting_fade_enabled;
+static lighting_idle_t lighting_idle;
 static scroll_accumulator_t scroll_accumulators[2][2];
 static uint8_t scroll_accumulator_div;
 static bool keyball_reset_pending;
@@ -294,6 +296,7 @@ void keyboard_post_init_user(void) {
   lighting_fade_suppressed = false;
   lighting_fade_enabled =
       lighting_fade_config_enabled(eeconfig_read_user());
+  lighting_idle_init(&lighting_idle, last_input_activity_time());
   if (!is_keyboard_master()) {
     transaction_register_rpc(RIPPLE_EVENT_TRANSACTION, ripple_receive);
     transaction_register_rpc(LIGHTING_FADE_TRANSACTION,
@@ -310,7 +313,10 @@ void housekeeping_task_user(void) {
   uint32_t local_now = timer_read32();
   uint32_t synced_now = sync_timer_read32();
   if (is_keyboard_master()) {
-    bool suppress = lighting_fade_should_suppress();
+    // Idle darkness is independent of the optional Auto Mouse fade setting.
+    bool idle = lighting_idle_update(&lighting_idle,
+                                     last_input_activity_time(), synced_now);
+    bool suppress = lighting_fade_should_suppress() || idle;
     if (suppress != lighting_fade_suppressed) {
       lighting_fade_suppressed = suppress;
       (void)lighting_fade_set_target(

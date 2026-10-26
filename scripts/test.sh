@@ -40,6 +40,8 @@ run_test lighting-fade \
 run_test lighting-fade-config \
     "$workspace/tests/lighting_fade_config_test.c" \
     "$custom/lighting_fade_config.c"
+run_test lighting-idle \
+    "$workspace/tests/lighting_idle_test.c" "$custom/lighting_idle.c"
 run_test lighting-buffer \
     "$workspace/tests/lighting_buffer_test.c" "$custom/lighting_buffer.c"
 run_test lighting-fade-sync \
