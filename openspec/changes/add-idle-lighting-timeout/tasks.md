@@ -16,10 +16,16 @@
 - [x] 3.1 Run `make test` and `make firmware` from a clean state and verify both succeed. Do not flash as part of this task.
 - [x] 3.2 Add a `## [1.5.0-rc.1] - 2026-10-26` entry at the top of `CHANGELOG.md`, matching `VERSION`. Under `### Changed`, describe the always-on idle timeout: all LEDs on both halves fade to black over 250 ms after three minutes without key or trackball input, the next input restores them and is still sent to the host, it does not depend on the Auto Mouse fade setting, and it leaves RGBLight settings and EEPROM unchanged. Under `### Safety and validation`, state that host tests and the pinned QMK firmware build pass, with no hardware validation line until task 3.3. Verify the entry follows the existing entry format and `git diff --check` is clean.
 - [x] 3.3 Write `TAG_MESSAGE.md` in the repository root following `docs/tag-messages.md`: first line `v1.5.0-rc.1: <summary>`, a `Changed:` section summarizing the `1.5.0-rc.1` changelog entry, a `Safety and validation:` section stating that host tests and the pinned QMK firmware build pass and that hardware acceptance remains pending, and `Full history: CHANGELOG.md`, with prose wrapped to match. Verify there are no unfilled placeholders, the version matches `VERSION`, and `git status` does not show the file (it is ignored).
-- [ ] 3.4 After the user manually flashes both halves, run the new hardware checklist items from `docs/custom-firmware.md` and add the results to the `1.5.0-rc.1` validation section of `CHANGELOG.md`: pass, or which checks are still outstanding. Verify the entry does not claim hardware acceptance while any required check is outstanding.
+- [x] 3.4 After the user manually flashes both halves, run the new hardware checklist items from `docs/custom-firmware.md` and add the results to the `1.5.0-rc.1` validation section of `CHANGELOG.md`: pass, or which checks are still outstanding. Verify the entry does not claim hardware acceptance while any required check is outstanding.
+
+## 4. Stable release
+
+- [x] 4.1 Set `VERSION` to `1.5.0` and add a `## [1.5.0] - 2026-10-27` entry at the top of `CHANGELOG.md`, carrying forward the `1.5.0-rc.1` `### Changed` text. Under `### Safety and validation`, state that host tests and the pinned QMK firmware build pass and that the full release-candidate hardware checklist passed on `1.5.0-rc.1`, including the idle-timeout items. Keep the `1.5.0-rc.1` entry unchanged except for the task 3.4 results.
+- [x] 4.2 Write `TAG_MESSAGE.md` for `v1.5.0` following `docs/tag-messages.md`. Verify there are no unfilled placeholders and the version matches `VERSION`.
+- [x] 4.3 Run `make test` and `make release`, inspect the UF2 and `dist/SHA256SUMS`, and verify `git diff --check` is clean. Do not flash as part of this task.
 
 ## Workflow follow-up
 
-- Commit the release preparation (`VERSION`, `CHANGELOG.md`), run `make test` and `make release`, and inspect the UF2 and `dist/SHA256SUMS`.
-- Create the signed tag with `git tag -s "v$(cat VERSION)" -F TAG_MESSAGE.md`, push that tag explicitly, confirm the GitHub Actions release succeeds, then delete `TAG_MESSAGE.md`.
-- Archive the change with `/opsx:archive` after hardware validation and review.
+- Commit the promotion (`VERSION`, `CHANGELOG.md`) as `chore(release): promote 1.5.0 from release candidate`.
+- Create the signed tag with `git tag -s "v$(cat VERSION)" -F TAG_MESSAGE.md`, push that tag explicitly, confirm the GitHub Actions run publishes a normal (non-prerelease) release containing the UF2 and `SHA256SUMS`, then delete `TAG_MESSAGE.md`.
+- Archive the change with `/opsx:archive`.
